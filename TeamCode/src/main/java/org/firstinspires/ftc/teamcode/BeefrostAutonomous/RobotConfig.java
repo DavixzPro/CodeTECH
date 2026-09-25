@@ -1,25 +1,29 @@
-package org.firstinspires.ftc.teamcode.BIOBUZZ;
+package org.firstinspires.ftc.teamcode.BeefrostAutonomous;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public abstract class RobotConfig extends LinearOpMode {
+
     protected DcMotor FL;
     protected DcMotor FR;
     protected DcMotor BL;
     protected DcMotor BR;
     protected DcMotorEx Shooter;
     protected DcMotor Intakes;
+    protected CRServo ServoFlowerE;
+    protected CRServo ServoFlowerD;
     protected Servo Trava;
-    protected Servo ServoShooter;
+    protected Servo ExtensorEsquerdo;
+    protected Servo ExtensorDireito;
     protected GoBildaPinpointDriver pinpoint;
     protected DistanceSensor SensorDistancia;
 
@@ -39,9 +43,12 @@ public abstract class RobotConfig extends LinearOpMode {
         BL = hardwareMap.get(DcMotor.class, "BL");
         BR = hardwareMap.get(DcMotor.class, "BR");
         Shooter = hardwareMap.get(DcMotorEx.class, "Shooter");
-        Trava = hardwareMap.get(Servo.class, "Trava");
-        ServoShooter = hardwareMap.get(Servo.class, "ServoShooter");
         Intakes = hardwareMap.get(DcMotor.class, "Intakes");
+
+        Trava = hardwareMap.get(Servo.class, "Trava");
+        ExtensorEsquerdo = hardwareMap.get(Servo.class, "ExtensorEsquerdo");
+        ExtensorDireito = hardwareMap.get(Servo.class, "ExtensorDireito");
+
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         SensorDistancia = hardwareMap.get(DistanceSensor.class, "SensorDistancia");
 
@@ -65,10 +72,25 @@ public abstract class RobotConfig extends LinearOpMode {
         pinpoint.setPosition(
                 new Pose2D(DistanceUnit.CM, 0, 5, AngleUnit.DEGREES, 0));
         pinpoint.update();
+    }
 
-        telemetry.addLine("=== Modo Autônomo ===");
+    void setTelemetry() {
         telemetry.addLine("");
-        telemetry.addLine("Pronto para inicializar");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
+        telemetry.addLine("");
         telemetry.update();
     }
 }

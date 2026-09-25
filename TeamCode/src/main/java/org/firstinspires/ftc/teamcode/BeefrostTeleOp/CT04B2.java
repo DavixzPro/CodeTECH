@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode.BIOBUZZ;
-
-import android.hardware.Sensor;
+package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,6 +13,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class CT04B2 extends OpMode {
 
     DcMotorEx Shooter;
+    DcMotor Intakes;
+    Servo IntakeE;
+    Servo IntakeD;
     Servo ExtensorEsquerdo;
     Servo ExtensorDireito;
     DcMotor FL, BL, FR, BR;
@@ -45,6 +46,10 @@ public class CT04B2 extends OpMode {
         ExtensorDireito = hardwareMap.get(Servo.class, "ExtensorDireito");
         ExtensorEsquerdo = hardwareMap.get(Servo.class, "ExtensorEsquerdo");
         SensorDistancia = hardwareMap.get(DistanceSensor.class, "SensorDistancia");
+
+        Intakes = hardwareMap.get(DcMotor.class, "Intakes");
+        IntakeE = hardwareMap.get(Servo.class, "IntakeE");
+        IntakeD = hardwareMap.get(Servo.class, "IntakeD");
         FL = hardwareMap.get(DcMotor.class, "FL");
         BL = hardwareMap.get(DcMotor.class, "BL");
         FR = hardwareMap.get(DcMotor.class, "FR");
@@ -108,11 +113,25 @@ public class CT04B2 extends OpMode {
 
         ///////////////////////////////////Servos/////////////////////////////////
 
-        if (gamepad1.dpad_left) {
+        if (gamepad1.dpadLeftWasPressed()) {
             PolenPosition();
         }
-        if (gamepad1.dpad_right) {
+        if (gamepad1.dpadRightWasPressed()) {
             NectarPosition();
+        }
+
+        if (gamepad1.x) {
+            Intakes.setPower(1);
+            IntakeE.setPosition(0.1);
+            IntakeD.setPosition(1.0);
+        } else if (gamepad1.y) {
+            Intakes.setPower(-1);
+            IntakeE.setPosition(1.0);
+            IntakeD.setPosition(0.1);
+        } else {
+            Intakes.setPower(0);
+            IntakeE.setPosition(0.5);
+            IntakeD.setPosition(0.5);
         }
 
 
@@ -152,8 +171,8 @@ public class CT04B2 extends OpMode {
     }
 
     public void NectarPosition() {
-        ExtensorDireito.setPosition(0.2);
-        ExtensorEsquerdo.setPosition(0.8);
+        ExtensorDireito.setPosition(0.15);
+        ExtensorEsquerdo.setPosition(0.85);
     }
 
 }

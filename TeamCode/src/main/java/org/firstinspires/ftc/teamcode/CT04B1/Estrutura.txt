@@ -1,10 +1,22 @@
-MECANUM: JOYSTICK ESQUERDO
-GIRO: TRIGGERS
-
 INTAKES: X
 OUTTAKES: Y
 
-SHOOTER (ON/OFF): BUMPER DIREITO
-SHOOTER PRO (ON/OFF): B
-(OBS: AS 2 OPÇÕES DE SHOOTER NÃO PODEM SER ATIVADAS SIMULTANEAMENTE)
-TRAVA DO SHOOTER: A (Ele deve voltar pra inicial position por conta própria)
+X = intake
+Y = outtake
+A = trava (on/off)
+B = shooter (on/off)
+
+LB =
+RB =
+
+LT = giro
+RT = giro
+
+LeftStick = movimentação
+LeftStickClick =
+
+RightStick =
+RightStickClick =
+
+DpadLeft = polen
+DpadRight = nectar

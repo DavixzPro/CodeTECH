@@ -34,7 +34,7 @@ public class CT04B1_TeleOp extends OpMode {
 
     private double xInicial;
 
-    private DistanceSensor SensorDeDistancia;
+    private DistanceSensor SensorDistancia;
     private VoltageSensor Battery;
 
     private boolean ultimoTrigger = false;
@@ -60,7 +60,7 @@ public class CT04B1_TeleOp extends OpMode {
         //servo = hardwareMap.get(Servo.class, "servo");
         Battery = hardwareMap.voltageSensor.iterator().next();
         imu = hardwareMap.get(IMU.class, "imu");
-        SensorDeDistancia = hardwareMap.get(DistanceSensor.class, "SensorDeDistancia");
+        SensorDistancia = hardwareMap.get(DistanceSensor.class, "SensorDistancia");
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         pinpoint.setEncoderResolution(
@@ -189,7 +189,7 @@ public class CT04B1_TeleOp extends OpMode {
 
         /////////////////////////Shooter automatico///////////////////////////////
 
-        double distance = SensorDeDistancia.getDistance(DistanceUnit.CM);
+        double distance = SensorDistancia.getDistance(DistanceUnit.CM);
         boolean triggerAtualShooter = gamepad1.right_bumper;
 
         if (triggerAtualShooter && !ultimoTriggerShooter) {

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.BIOBUZZ;
+package org.firstinspires.ftc.teamcode.BeefrostAutonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -8,6 +8,8 @@ public class RoboAutonomo extends RobotMecanisms  {
     @Override
     public void runOpMode() {
         ConfigureRobot();
+        PolenLaunch();
+        Trava.setPosition(0.5);
 
         waitForStart();
         if (opModeIsActive()) {
