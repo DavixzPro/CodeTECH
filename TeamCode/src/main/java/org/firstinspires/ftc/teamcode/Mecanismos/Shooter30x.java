@@ -30,8 +30,6 @@ public class Shooter30x extends OpMode {
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
         Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         telemetry.addLine("init completo");
-
-
     }
 
     @Override
@@ -77,7 +75,7 @@ public class Shooter30x extends OpMode {
         telemetry.addData("Error, %.2f", error);
         telemetry.addLine("----------------");
         telemetry.addData("Tuning P",  "%.4f (D-Pad U/D)", P);
-        telemetry.addData("Tunig F", "%.4f (D-pad L/R)", F);
+        telemetry.addData("Tuning F", "%.4f (D-pad L/R)", F);
         telemetry.addData("Step Sizes, %.4f (B button)", stepSizes[stepIndex]);
     }
 }

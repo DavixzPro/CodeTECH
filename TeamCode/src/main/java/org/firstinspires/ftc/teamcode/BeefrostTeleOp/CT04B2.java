@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name = "CT04B2")
@@ -20,6 +22,7 @@ public class CT04B2 extends OpMode {
     Servo ExtensorDireito;
     DcMotor FL, BL, FR, BR;
     DistanceSensor SensorDistancia;
+    VoltageSensor Battery;
 
     MaquinaEstado shooterEstado = new MaquinaEstado();
 
@@ -43,13 +46,17 @@ public class CT04B2 extends OpMode {
     @Override
     public void init() {
         Shooter = hardwareMap.get(DcMotorEx.class, "Shooter");
+
         ExtensorDireito = hardwareMap.get(Servo.class, "ExtensorDireito");
         ExtensorEsquerdo = hardwareMap.get(Servo.class, "ExtensorEsquerdo");
+
         SensorDistancia = hardwareMap.get(DistanceSensor.class, "SensorDistancia");
+        Battery = hardwareMap.voltageSensor.iterator().next();
 
         Intakes = hardwareMap.get(DcMotor.class, "Intakes");
         IntakeE = hardwareMap.get(Servo.class, "IntakeE");
         IntakeD = hardwareMap.get(Servo.class, "IntakeD");
+
         FL = hardwareMap.get(DcMotor.class, "FL");
         BL = hardwareMap.get(DcMotor.class, "BL");
         FR = hardwareMap.get(DcMotor.class, "FR");
@@ -63,6 +70,8 @@ public class CT04B2 extends OpMode {
         Shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Shooter.setDirection(DcMotor.Direction.REVERSE);
+
+        PolenPosition();
     }
 
     @Override
@@ -148,14 +157,13 @@ public class CT04B2 extends OpMode {
         if (shooterEstado.getIsOn()) {
 
             if (distance <= 21) {
-                potenciaShooter = 0.60;
+                potenciaShooter = 0.57;
 
             } else if (distance >= 33) {
                 potenciaShooter = 0.45;
 
             } else {
-                potenciaShooter =
-                        0.45 + ((33.0 - distance) * (0.15 / 12.0));
+                potenciaShooter = 0.45 + ((33.0 - distance) * (0.12 / 12.0));
             }
 
             Shooter.setPower(potenciaShooter);
@@ -163,16 +171,26 @@ public class CT04B2 extends OpMode {
         } else {
             Shooter.setPower(0);
         }
+
+
+        double voltagem = Battery.getVoltage();
+        double rpm = Shooter.getVelocity() / 28.0 * 60.0;
+
+        telemetry.addData("Bateria", "%.2f V", voltagem);
+        telemetry.addData("Shooter RPM", "%.0f", rpm);
+        telemetry.addData("Distância", "%.2f cm", distance);
+        telemetry.update();
+
     }
 
     public void PolenPosition() {
-        ExtensorDireito.setPosition(0.5);
-        ExtensorEsquerdo.setPosition(0.5);
+        ExtensorDireito.setPosition(0.45);
+        ExtensorEsquerdo.setPosition(0.55);
     }
 
     public void NectarPosition() {
-        ExtensorDireito.setPosition(0.15);
-        ExtensorEsquerdo.setPosition(0.85);
+        ExtensorDireito.setPosition(0.25);
+        ExtensorEsquerdo.setPosition(0.75);
     }
 
 }
