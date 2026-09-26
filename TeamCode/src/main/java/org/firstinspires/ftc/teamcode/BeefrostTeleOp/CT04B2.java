@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -16,12 +16,11 @@ public class CT04B2 extends OpMode {
 
     DcMotorEx Shooter;
     DcMotor Intakes;
-    Servo IntakeE;
-    Servo IntakeD;
     Servo ExtensorEsquerdo;
     Servo ExtensorDireito;
     DcMotor FL, BL, FR, BR;
     DistanceSensor SensorDistancia;
+    ColorSensor SensorCor;
     VoltageSensor Battery;
 
     MaquinaEstado shooterEstado = new MaquinaEstado();
@@ -36,7 +35,6 @@ public class CT04B2 extends OpMode {
         public void setIsOn(boolean isOn) {
             this.isOn = isOn;
         }
-
         public void toggleShooter() {
             setIsOn(!getIsOn());
         }
@@ -47,15 +45,14 @@ public class CT04B2 extends OpMode {
     public void init() {
         Shooter = hardwareMap.get(DcMotorEx.class, "Shooter");
 
-        ExtensorDireito = hardwareMap.get(Servo.class, "ExtensorDireito");
-        ExtensorEsquerdo = hardwareMap.get(Servo.class, "ExtensorEsquerdo");
-
         SensorDistancia = hardwareMap.get(DistanceSensor.class, "SensorDistancia");
         Battery = hardwareMap.voltageSensor.iterator().next();
+        SensorCor = hardwareMap.get(ColorSensor.class, "SensorCor");
 
         Intakes = hardwareMap.get(DcMotor.class, "Intakes");
-        IntakeE = hardwareMap.get(Servo.class, "IntakeE");
-        IntakeD = hardwareMap.get(Servo.class, "IntakeD");
+
+        Intakes.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Intakes.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         FL = hardwareMap.get(DcMotor.class, "FL");
         BL = hardwareMap.get(DcMotor.class, "BL");
@@ -129,18 +126,14 @@ public class CT04B2 extends OpMode {
             NectarPosition();
         }
 
+        //////////////////////////////////Intakes/////////////////////////////////
+
         if (gamepad1.x) {
             Intakes.setPower(1);
-            IntakeE.setPosition(0.1);
-            IntakeD.setPosition(1.0);
         } else if (gamepad1.y) {
             Intakes.setPower(-1);
-            IntakeE.setPosition(1.0);
-            IntakeD.setPosition(0.1);
         } else {
             Intakes.setPower(0);
-            IntakeE.setPosition(0.5);
-            IntakeD.setPosition(0.5);
         }
 
 
@@ -172,6 +165,7 @@ public class CT04B2 extends OpMode {
             Shooter.setPower(0);
         }
 
+        ////////////////////////////////Telemetria/////////////////////////////////
 
         double voltagem = Battery.getVoltage();
         double rpm = Shooter.getVelocity() / 28.0 * 60.0;
