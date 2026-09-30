@@ -45,6 +45,9 @@ public class CT04B2 extends OpMode {
     public void init() {
         Shooter = hardwareMap.get(DcMotorEx.class, "Shooter");
 
+        ExtensorDireito = hardwareMap.get(Servo.class, "ExtensorDireito");
+        ExtensorEsquerdo = hardwareMap.get(Servo.class, "ExtensorEsquerdo");
+
         SensorDistancia = hardwareMap.get(DistanceSensor.class, "SensorDistancia");
         Battery = hardwareMap.voltageSensor.iterator().next();
         SensorCor = hardwareMap.get(ColorSensor.class, "SensorCor");
