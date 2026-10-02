@@ -147,7 +147,6 @@ public class CT04B2 extends OpMode {
         }
 
         double distance = SensorDistancia.getDistance(DistanceUnit.CM);
-
         double potenciaShooter = 0;
 
         if (shooterEstado.getIsOn()) {
