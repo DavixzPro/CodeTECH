@@ -5,11 +5,10 @@ import static android.os.SystemClock.sleep;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
 @Autonomous(name = "AutonomoCurso")
-public class RoboAutonomo extends OpMode {
+public class AutonomoCurso extends OpMode {
 
     DcMotor frenteEsquerda;
     DcMotor frenteDireita;

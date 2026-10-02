@@ -16,6 +16,9 @@ public class Beefrost_TeleOp extends OpMode {
     DcMotor FR;
     DcMotor BR;
     Servo ExtensorDireito;
+    Servo Trava;
+
+    boolean TravaAtiva = false;
 
     @Override
     public void init() {
@@ -27,6 +30,7 @@ public class Beefrost_TeleOp extends OpMode {
         BR = hardwareMap.get(DcMotor.class, "BR");
 
         ExtensorDireito = hardwareMap.get(Servo.class, "ExtensorDireito");
+        Trava = hardwareMap.get(Servo.class, "Trava");
 
         BL.setDirection(DcMotor.Direction.REVERSE);
         FL.setDirection(DcMotor.Direction.FORWARD);
@@ -101,7 +105,7 @@ public class Beefrost_TeleOp extends OpMode {
         if (gamepad1.x) {
             Intakes.setPower(1);
         } else if (gamepad1.y) {
-            Intakes.setPower(-0.8);
+            Intakes.setPower(-1);
         } else {
             Intakes.setPower(0);
         }
@@ -114,6 +118,19 @@ public class Beefrost_TeleOp extends OpMode {
         }
         if (gamepad1.dpadRightWasPressed()) {
             NectarPosition();
+        }
+
+
+        // TRAVA
+
+        if (gamepad1.aWasPressed()) {
+            TravaAtiva = !TravaAtiva;
+
+            if (TravaAtiva) {
+                Trava.setPosition(0.6);
+            } else {
+                Trava.setPosition(0.2);
+            }
         }
     }
 
