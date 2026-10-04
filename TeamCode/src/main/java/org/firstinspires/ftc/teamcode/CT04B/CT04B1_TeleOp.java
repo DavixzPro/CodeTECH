@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.CT04B1;
+package org.firstinspires.ftc.teamcode.CT04B;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;

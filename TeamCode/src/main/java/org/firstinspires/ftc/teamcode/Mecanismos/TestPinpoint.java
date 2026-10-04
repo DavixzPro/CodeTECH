@@ -22,7 +22,7 @@ public class TestPinpoint extends LinearOpMode {
         );
 
         pinpoint.setEncoderResolution(
-                GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD
+                GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD
         );
 
         pinpoint.setOffsets(

@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.BeefrostAutonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "RoboAutonomo")
-public class BifrostAutonomo extends RobotMecanisms  {
+@Autonomous(name = "BeefrostAutonomo")
+public class BeefrostAutonomo extends RobotMecanisms  {
 
     @Override
     public void runOpMode() {
