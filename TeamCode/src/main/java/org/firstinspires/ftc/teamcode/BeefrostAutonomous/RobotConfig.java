@@ -75,22 +75,14 @@ public abstract class RobotConfig extends LinearOpMode {
     }
 
     void setTelemetry() {
+        telemetry.addLine("=== Beefrost AUTO ===");
         telemetry.addLine("");
+        telemetry.addLine("Pinpoint configurado");
+        telemetry.addLine("Motores configurados");
         telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
-        telemetry.addLine("");
+        telemetry.addData("Y", "%.2f in", pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("X", "%.2f in", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("Heading", "%.2f°", pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.update();
     }
 }

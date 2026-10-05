@@ -17,10 +17,10 @@ public class TeleOperadoJoystick extends OpMode {
 
     @Override
     public void init() {
-        frenteEsquerda = hardwareMap.get(DcMotor.class, "frenteEsquerda");
-        trasEsquerda = hardwareMap.get(DcMotor.class, "trasEsquerda");
-        frenteDireita = hardwareMap.get(DcMotor.class, "frenteDireita");
-        trasDireita = hardwareMap.get(DcMotor.class, "trasDireita");
+        frenteEsquerda = hardwareMap.get(DcMotor.class, "FL");
+        trasEsquerda = hardwareMap.get(DcMotor.class, "BL");
+        frenteDireita = hardwareMap.get(DcMotor.class, "FR");
+        trasDireita = hardwareMap.get(DcMotor.class, "BR");
 
         frenteDireita.setDirection(DcMotor.Direction.REVERSE);
         trasDireita.setDirection(DcMotor.Direction.REVERSE);
