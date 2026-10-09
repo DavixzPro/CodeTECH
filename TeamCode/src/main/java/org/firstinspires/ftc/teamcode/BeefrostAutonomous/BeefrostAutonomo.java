@@ -8,8 +8,8 @@ public class BeefrostAutonomo extends RobotMecanisms  {
     @Override
     public void runOpMode() {
         ConfigureRobot();
-        PolenLaunch();
-        Trava.setPosition(0.5);
+        PolenPosition();
+        travarShooter();
 
         waitForStart();
         if (opModeIsActive()) {

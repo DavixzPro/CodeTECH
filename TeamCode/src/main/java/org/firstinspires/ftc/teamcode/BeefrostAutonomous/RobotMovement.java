@@ -6,99 +6,139 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public abstract class RobotMovement extends RobotConfig {
 
     //======================= MOVIMENTO E GIRO =========================//
-    void andarFrente(double potencia, double distanciaEmCm) {
+    void andarFrente(double potencia, double distanciaCm) {
+        moverRelativo(potencia, 0, distanciaCm, "FRENTE");
+    }
+    void andarTras(double potencia, double distanciaCm) {
+        moverRelativo(-potencia, 0, distanciaCm, "TRÁS");
+    }
+    void andarDireita(double potencia, double distanciaCm) {
+        moverRelativo(0, potencia, distanciaCm, "DIREITA");
+    }
+    void andarEsquerda(double potencia, double distanciaCm) {
+        moverRelativo(0, -potencia, distanciaCm, "ESQUERDA");
+    }
 
-        potencia = Math.abs(potencia);
-        distanciaEmCm = Math.abs(distanciaEmCm);
+    void moverRelativo(
+            double frente,
+            double lateral,
+            double distanciaCm,
+            String movimento) {
+
+        frente = Math.max(-1.0, Math.min(1.0, frente));
+        lateral = Math.max(-1.0, Math.min(1.0, lateral));
+
         pinpoint.update();
-
         double xInicial = pinpoint.getPosX(DistanceUnit.CM);
+        double yInicial = pinpoint.getPosY(DistanceUnit.CM);
+        double headingInicial = pinpoint.getHeading(AngleUnit.RADIANS);
+
+        double distanciaInicial = Math.hypot(frente, lateral);
+
+        if (distanciaInicial == 0) {
+            parar();
+            return;
+        }
+
+        double frenteUnitario = frente / distanciaInicial;
+        double lateralUnitario = lateral / distanciaInicial;
+
+        double direcaoX =
+                Math.cos(headingInicial) * frenteUnitario
+                        - Math.sin(headingInicial) * lateralUnitario;
+
+        double direcaoY =
+                Math.sin(headingInicial) * frenteUnitario
+                        + Math.cos(headingInicial) * lateralUnitario;
+
+        double alvoX = xInicial + direcaoX * distanciaCm;
+        double alvoY = yInicial + direcaoY * distanciaCm;
 
         while (opModeIsActive()) {
+
             pinpoint.update();
-
             double xAtual = pinpoint.getPosX(DistanceUnit.CM);
-            double deltaX = xAtual - xInicial;
-            double distanciaPercorrida = Math.abs(deltaX);
+            double yAtual = pinpoint.getPosY(DistanceUnit.CM);
+            double headingAtual = pinpoint.getHeading(AngleUnit.RADIANS);
 
-            telemetry.addData("Movimento", "FRENTE");
-            telemetry.addData("Distancia", "%.2f / %.2f cm", distanciaPercorrida, distanciaEmCm);
-            telemetry.addData("X", "%.2f cm", xAtual);
-            telemetry.addData("Heading", "%.2f graus", pinpoint.getHeading(AngleUnit.DEGREES));
+            double erroX = alvoX - xAtual;
+            double erroY = alvoY - yAtual;
+
+            double distanciaRestante = Math.hypot(erroX, erroY);
+
+            telemetry.addData("Movimento", movimento);
+            telemetry.addData("Distância", "%.2f / %.2f cm", distanciaCm - distanciaRestante, distanciaCm);
+            telemetry.addData("X", "%.2f / %.2f", xAtual, alvoX);
+            telemetry.addData("Y", "%.2f / %.2f", yAtual, alvoY);
+            telemetry.addData("Heading", "%.2f°", Math.toDegrees(headingAtual));
             telemetry.update();
 
-            if (distanciaPercorrida >=
-                    distanciaEmCm - TOLERANCIA_DISTANCIA_CM) {
+            if (distanciaRestante <= TOLERANCIA_CM) {
                 break;
             }
 
-            moverFrente(potencia);
+            double erroFrente =
+                    erroX * Math.cos(headingAtual)
+                            + erroY * Math.sin(headingAtual);
+
+            double erroLateral =
+                    -erroX * Math.sin(headingAtual)
+                            + erroY * Math.cos(headingAtual);
+
+
+            double comandoFrente = erroFrente * 0.035;
+            double comandoLateral = erroLateral * 0.035;
+
+            double potenciaLimite = Math.max(Math.abs(frente), Math.abs(lateral));
+            comandoFrente = limitar(comandoFrente, -potenciaLimite, potenciaLimite);
+            comandoLateral = limitar(comandoLateral, -potenciaLimite, potenciaLimite);
+
+            moverMecanum(comandoFrente, comandoLateral);
         }
+
         parar();
+        sleep(100);
     }
 
-     void andarTras(double potencia, double distanciaEmCm) {
-
-        potencia = Math.abs(potencia);
-        distanciaEmCm = Math.abs(distanciaEmCm);
-        pinpoint.update();
-
-        double xInicial = pinpoint.getPosX(DistanceUnit.CM);
-
-        while (opModeIsActive()) {
-            pinpoint.update();
-
-            double xAtual = pinpoint.getPosX(DistanceUnit.CM);
-            double deltaX = xAtual - xInicial;
-            double distanciaPercorrida = Math.abs(deltaX);
-
-            telemetry.addData("Movimento", "TRÁS");
-            telemetry.addData("Distancia", "%.2f / %.2f cm", distanciaPercorrida, distanciaEmCm);
-            telemetry.addData("X", "%.2f cm", xAtual);
-            telemetry.addData("Heading", "%.2f graus", pinpoint.getHeading(AngleUnit.DEGREES));
-            telemetry.update();
-
-            if (distanciaPercorrida >= distanciaEmCm - TOLERANCIA_DISTANCIA_CM) {
-                break;
-            }
-
-            moverTras(potencia);
-        }
-        parar();
+    void girarEsquerda(double potenciaMaxima, double angulo) {
+        girar(-Math.abs(potenciaMaxima), Math.abs(angulo), "ESQUERDA");
+    }
+    void girarDireita(double potenciaMaxima, double angulo) {
+        girar(Math.abs(potenciaMaxima), Math.abs(angulo), "DIREITA");
     }
 
-     void girarDireita(double potenciaMaxima, double angulo) {
+    void girar(
+            double potenciaMaxima,
+            double anguloAlvo,
+            String movimento) {
 
-        potenciaMaxima = Math.abs(potenciaMaxima);
-        angulo = Math.abs(angulo);
         pinpoint.update();
-
-        double headingAnterior = pinpoint.getHeading(AngleUnit.DEGREES);
-        double grausGirados = 0;
+        double headingInicial = pinpoint.getHeading(AngleUnit.DEGREES);
 
         while (opModeIsActive()) {
-            pinpoint.update();
 
+            pinpoint.update();
             double headingAtual = pinpoint.getHeading(AngleUnit.DEGREES);
-            double delta = normalizarAngulo(headingAtual - headingAnterior);
-            grausGirados += Math.abs(delta);
-            headingAnterior = headingAtual;
-            double erro = angulo - grausGirados;
 
-            telemetry.addData("Movimento", "DIREITA");
-            telemetry.addData("Girado", "%.2f / %.2f graus", grausGirados, angulo);
-            telemetry.addData("Heading", "%.2f graus", headingAtual);
+            double grausGirados =
+                    Math.abs(normalizarAngulo(
+                            headingAtual - headingInicial));
+
+            double erro = anguloAlvo - grausGirados;
+
+            telemetry.addData("Movimento", movimento);
+            telemetry.addData("Girado", "%.2f / %.2f°", grausGirados, anguloAlvo);
+            telemetry.addData("Heading", "%.2f°", headingAtual);
             telemetry.update();
 
-            // Chegou nos 90 graus
-            if (grausGirados >= angulo - TOLERANCIA_ANGULO_GRAUS) {
+            if (grausGirados >= anguloAlvo - TOLERANCIA_GRAUS) {
                 break;
             }
 
             double potencia;
 
             if (erro > 30) {
-                potencia = potenciaMaxima;
+                potencia = Math.abs(potenciaMaxima);
             } else if (erro > 15) {
                 potencia = 0.40;
             } else if (erro > 5) {
@@ -107,99 +147,63 @@ public abstract class RobotMovement extends RobotConfig {
                 potencia = 0.15;
             }
 
-            potencia = Math.min(potencia, potenciaMaxima);
-            girarDireitaMotores(potencia);
-        }
+            potencia = Math.min(
+                    potencia,
+                    Math.abs(potenciaMaxima));
 
-        parar();
-        sleep(100);
-    }
-
-     void girarEsquerda(double potenciaMaxima, double angulo) {
-
-        potenciaMaxima = Math.abs(potenciaMaxima);
-        angulo = Math.abs(angulo);
-        pinpoint.update();
-
-        double headingAnterior = pinpoint.getHeading(AngleUnit.DEGREES);
-        double grausGirados = 0;
-
-        while (opModeIsActive()) {
-            pinpoint.update();
-
-            double headingAtual = pinpoint.getHeading(AngleUnit.DEGREES);
-            double delta = normalizarAngulo(headingAtual - headingAnterior);
-            grausGirados += Math.abs(delta);
-            headingAnterior = headingAtual;
-            double erro = angulo - grausGirados;
-
-            telemetry.addData("Movimento", "ESQUERDA");
-            telemetry.addData("Girado", "%.2f / %.2f graus", grausGirados, angulo);
-            telemetry.addData("Heading", "%.2f graus", headingAtual);
-            telemetry.update();
-
-            if (grausGirados >= angulo - TOLERANCIA_ANGULO_GRAUS) {
-                break;
-            }
-
-            double potencia;
-
-            if (erro > 30) {
-                potencia = potenciaMaxima;
-            } else if (erro > 15) {
-                potencia = 0.40;
-            } else if (erro > 5) {
-                potencia = 0.25;
+            if (potenciaMaxima > 0) {
+                girarDireitaMotores(potencia);
             } else {
-                potencia = 0.15;
+                girarEsquerdaMotores(potencia);
             }
-
-            potencia = Math.min(potencia, potenciaMaxima);
-            girarEsquerdaMotores(potencia);
         }
 
         parar();
         sleep(100);
     }
 
-    //===================== APLICAÇÃO DE POTÊNCIA =====================//
-     void moverFrente(double potencia) {
+    void moverMecanum(double frente, double lateral) {
+
+        double fl = frente + lateral;
+        double fr = frente - lateral;
+        double bl = frente - lateral;
+        double br = frente + lateral;
+
+        double max = Math.max(1.0, Math.max(Math.abs(fl),
+                Math.max(Math.abs(fr), Math.max(Math.abs(bl), Math.abs(br)))));
+
+        FL.setPower(fl / max);
+        FR.setPower(fr / max);
+        BL.setPower(bl / max);
+        BR.setPower(br / max);
+    }
+
+    void girarDireitaMotores(double potencia) {
         FL.setPower(potencia);
-        FR.setPower(potencia);
+        FR.setPower(-potencia);
         BL.setPower(potencia);
+        BR.setPower(-potencia);
+    }
+    void girarEsquerdaMotores(double potencia) {
+        FL.setPower(-potencia);
+        FR.setPower(potencia);
+        BL.setPower(-potencia);
         BR.setPower(potencia);
     }
 
-     void moverTras(double potencia) {
-        FL.setPower(-potencia);
-        FR.setPower(-potencia);
-        BL.setPower(-potencia);
-        BR.setPower(-potencia);
-    }
-
-     void girarDireitaMotores(double potencia) {
-        FL.setPower(potencia);
-        BL.setPower(potencia);
-        FR.setPower(-potencia);
-        BR.setPower(-potencia);
-    }
-
-     void girarEsquerdaMotores(double potencia) {
-        FL.setPower(-potencia);
-        BL.setPower(-potencia);
-        FR.setPower(potencia);
-        BR.setPower(potencia);
-    }
-
-     void parar() {
+    void parar() {
         FL.setPower(0);
         FR.setPower(0);
         BL.setPower(0);
         BR.setPower(0);
     }
 
-    //====================== AJUSTE DE ÂNGULO ======================//
-     double normalizarAngulo(double angulo) {
+    double limitar(double valor, double minimo, double maximo) {
+        return Math.max(minimo, Math.min(maximo, valor));
+    }
+
+    double normalizarAngulo(double angulo) {
+
         while (angulo > 180) {
             angulo -= 360;
         }

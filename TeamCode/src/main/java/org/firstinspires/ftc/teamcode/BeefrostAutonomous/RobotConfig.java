@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -19,21 +20,18 @@ public abstract class RobotConfig extends LinearOpMode {
     protected DcMotor BR;
     protected DcMotorEx Shooter;
     protected DcMotor Intakes;
-    protected CRServo ServoFlowerE;
-    protected CRServo ServoFlowerD;
     protected Servo Trava;
     protected Servo ExtensorEsquerdo;
     protected Servo ExtensorDireito;
     protected GoBildaPinpointDriver pinpoint;
     protected DistanceSensor SensorDistancia;
 
-    double distancia = SensorDistancia.getDistance(DistanceUnit.CM);
+    protected static final double TOLERANCIA_CM = 1.0;
+    protected static final double TOLERANCIA_GRAUS = 1.0;
 
-    protected static final double TOLERANCIA_DISTANCIA_CM = 0.5;
-    protected static final double TOLERANCIA_ANGULO_GRAUS = 1.0;
-
-    private boolean ultimoTriggerShooter = false;
-    private boolean shooterLigado = false;
+    double F = 17.75;
+    double P = 240.0;
+    double targetVelocity = 1350;
 
 
     //====================== CONFIGURAÇÃO DO ROBÔ ======================//
@@ -52,11 +50,16 @@ public abstract class RobotConfig extends LinearOpMode {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         SensorDistancia = hardwareMap.get(DistanceSensor.class, "SensorDistancia");
 
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0 , F);
+        Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Shooter.setDirection(DcMotor.Direction.REVERSE);
+
         //Motores
-        FL.setDirection(DcMotor.Direction.FORWARD);
-        FR.setDirection(DcMotor.Direction.FORWARD);
-        BL.setDirection(DcMotor.Direction.REVERSE);
-        BR.setDirection(DcMotor.Direction.FORWARD);
+        FL.setDirection(DcMotor.Direction.REVERSE);
+        BL.setDirection(DcMotor.Direction.FORWARD);
+        FR.setDirection(DcMotor.Direction.REVERSE);
+        BR.setDirection(DcMotor.Direction.REVERSE);
 
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -65,12 +68,11 @@ public abstract class RobotConfig extends LinearOpMode {
 
         //Pinpoint
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.setOffsets(0, 50, DistanceUnit.MM);
+        pinpoint.setOffsets(165, 50, DistanceUnit.MM);
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,
                 GoBildaPinpointDriver.EncoderDirection.FORWARD);
-        pinpoint.setPosition(
-                new Pose2D(DistanceUnit.CM, 0, 5, AngleUnit.DEGREES, 0));
+        pinpoint.setPosition(new Pose2D(DistanceUnit.CM, 0, 0, AngleUnit.DEGREES, 0));
         pinpoint.update();
     }
 
