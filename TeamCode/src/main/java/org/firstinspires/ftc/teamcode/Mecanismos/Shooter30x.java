@@ -11,11 +11,12 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 public class Shooter30x extends OpMode {
 
     public DcMotorEx Shooter;
-    public double highVelocity = 2000;
-    public double lowVelocity = 1400;
+    public DcMotor Intakes;
+    public double highVelocity = 1350;
+    public double lowVelocity = 750;
     double curTargetVelocity = highVelocity;
-    double F = 0;
-    double P = 0;
+    double F = 17.75;
+    double P = 240.0;
     double[] stepSizes = {100.0, 10.0, 1.0, 0.1, 0.01};
     int stepIndex = 1;
 
@@ -23,10 +24,14 @@ public class Shooter30x extends OpMode {
     @Override
     public void init() {
         Shooter = hardwareMap.get(DcMotorEx.class, "Shooter");
+        Intakes = hardwareMap.get(DcMotor.class, "Intakes");
         Shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Shooter.setDirection(DcMotorSimple.Direction.FORWARD);
+        Shooter.setDirection(DcMotorSimple.Direction.REVERSE);
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0, F);
         Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        Intakes.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Intakes.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Intakes.setDirection(DcMotor.Direction.REVERSE);
         telemetry.addLine("init completo");
     }
 
@@ -38,6 +43,14 @@ public class Shooter30x extends OpMode {
             } else {
                 curTargetVelocity = highVelocity;
             }
+        }
+
+        if (gamepad1.x) {
+            Intakes.setPower(1);
+        } else if (gamepad1.a) {
+            Intakes.setPower(-1);
+        } else {
+            Intakes.setPower(0);
         }
 
         if (gamepad1.bWasPressed()) {
@@ -57,7 +70,7 @@ public class Shooter30x extends OpMode {
             F -= stepSizes[stepIndex];
         }
 
-        //=====seta o novo coeficiente PIDF=====//
+
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0 , F);
         Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
@@ -72,9 +85,7 @@ public class Shooter30x extends OpMode {
         telemetry.addData("Error ", "%.2f", error);
         telemetry.addLine("----------------");
         telemetry.addData("Tuning P",  "%.4f (D-Pad U/D)", P);
-        telemetry.addData("Tuning F", "%.4f (D-pad L/R)", F);
+        telemetry.addData("Tuning F", "%.4f (D-pad L/R)", Math.abs(F));
         telemetry.addData("Step Sizes, %.4f (B button)", stepSizes[stepIndex]);
     }
-
-    //RPM NECESSÁRIO = 2000
 }

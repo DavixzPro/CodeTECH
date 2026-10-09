@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -16,33 +17,43 @@ public class Beefrost_TeleOp extends OpMode {
     DcMotor FR;
     DcMotor BR;
     Servo ExtensorDireito;
+    Servo ExtensorEsquerdo;
     Servo Trava;
 
-    boolean TravaAtiva = false;
+    double F = 17.75;
+    double P = 240.0;
+    boolean shooterLigado;
+    double targetVelocity = 1350;
+
 
     @Override
     public void init() {
+
         Intakes = hardwareMap.get(DcMotor.class, "Intakes");
         Shooter = hardwareMap.get(DcMotorEx.class, "Shooter");
         FL = hardwareMap.get(DcMotor.class, "FL");
         BL = hardwareMap.get(DcMotor.class, "BL");
         FR = hardwareMap.get(DcMotor.class, "FR");
         BR = hardwareMap.get(DcMotor.class, "BR");
-
         ExtensorDireito = hardwareMap.get(Servo.class, "ExtensorDireito");
+        ExtensorEsquerdo = hardwareMap.get(Servo.class, "ExtensorEsquerdo");
         Trava = hardwareMap.get(Servo.class, "Trava");
 
-        BL.setDirection(DcMotor.Direction.REVERSE);
-        FL.setDirection(DcMotor.Direction.FORWARD);
+        BL.setDirection(DcMotor.Direction.FORWARD);
+        FL.setDirection(DcMotor.Direction.REVERSE);
         BR.setDirection(DcMotor.Direction.REVERSE);
-        FR.setDirection(DcMotor.Direction.FORWARD);
+        FR.setDirection(DcMotor.Direction.REVERSE);
 
         Intakes.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Intakes.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Intakes.setDirection(DcMotor.Direction.REVERSE);
-        Shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0 , F);
+        Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Shooter.setDirection(DcMotor.Direction.REVERSE);
+
+        PolenPosition();
     }
 
     @Override
@@ -93,12 +104,14 @@ public class Beefrost_TeleOp extends OpMode {
 
         // SHOOTER
 
-        if (gamepad1.b) {
-            Shooter.setPower(0.65);
-        } else {
-            Shooter.setPower(0);
+        if (gamepad1.bWasPressed()) {
+            shooterLigado = !shooterLigado;
         }
-
+        if (shooterLigado) {
+            Shooter.setVelocity(targetVelocity);
+        } else {
+            Shooter.setVelocity(0);
+        }
 
         // INTAKES
 
@@ -121,25 +134,24 @@ public class Beefrost_TeleOp extends OpMode {
         }
 
 
-        // TRAVA
+        // TELEMETRIA
 
-        if (gamepad1.aWasPressed()) {
-            TravaAtiva = !TravaAtiva;
+        double actualRPM = Math.abs(Shooter.getVelocity()) * 60.0 / 28.0;
+        double targetRPM = targetVelocity * 60.0 / 28.0;
 
-            if (TravaAtiva) {
-                Trava.setPosition(0.6);
-            } else {
-                Trava.setPosition(0.2);
-            }
-        }
+        telemetry.addData("RPM (Atual / Alvo)", "%.0f / %.0f", actualRPM, targetRPM);
+        telemetry.update();
+
     }
 
     public void PolenPosition() {
         ExtensorDireito.setPosition(0.45);
+        ExtensorEsquerdo.setPosition(0.20);
     }
 
     public void NectarPosition() {
-        ExtensorDireito.setPosition(0.25);
+        ExtensorDireito.setPosition(0.20);
+        ExtensorEsquerdo.setPosition(0.70);
     }
 
 }
