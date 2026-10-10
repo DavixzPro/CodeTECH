@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.internal.opengl.shaders.ShaderHelper;
+
 @TeleOp(name = "BeefrostTeleOp")
 public class BeefrostTeleOp extends OpMode {
 
@@ -23,16 +25,16 @@ public class BeefrostTeleOp extends OpMode {
     private VoltageSensor Battery;
     private Limelight3A limelight;
 
-    double F = 17.75;
+    double F = 16.7;
     double P = 240.0;
     boolean shooterLigado;
-    double targetVelocity = 1350;
-    private boolean ultimoB = false;
+    double polenVelocity = 1300;
+    double nectarVelocity = 1500;
+    boolean shooterMode = true;
 
     private boolean seguirAprilTag = false;
-    private boolean ultimoRightBumper = false;
 
-    private double kP = 0.040;
+    private double kP = 0.030;
 
     @Override
     public void init() {
@@ -62,10 +64,7 @@ public class BeefrostTeleOp extends OpMode {
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Shooter.setDirection(DcMotor.Direction.REVERSE);
 
-        limelight = hardwareMap.get(
-                Limelight3A.class,
-                "limelight");
-
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(0);
 
         telemetry.addLine("BEEFROST iniciado");
@@ -81,8 +80,6 @@ public class BeefrostTeleOp extends OpMode {
 
     @Override
     public void loop() {
-
-        controlarModoAprilTag();
         controlarMovimento();
         controlarIntake();
         controlarShooter();
@@ -92,21 +89,7 @@ public class BeefrostTeleOp extends OpMode {
         //tags
         telemetry.addData("AprilTag Assist", seguirAprilTag ? "ATIVO" : "DESATIVADO");
         telemetry.addData("Bateria", "%.2f V", Battery.getVoltage());
-
-        //shooter
-        double actualRPM = Math.abs(Shooter.getVelocity()) * 60.0 / 28.0;
-        double targetRPM = targetVelocity * 60.0 / 28.0;
-        telemetry.addData("RPM (Atual / Alvo)", "%.0f / %.0f", actualRPM, targetRPM);
         telemetry.update();
-    }
-
-    private void controlarModoAprilTag() {
-
-        if (gamepad1.right_bumper && !ultimoRightBumper) {
-            seguirAprilTag = !seguirAprilTag;
-        }
-
-        ultimoRightBumper = gamepad1.right_bumper;
     }
 
     private void controlarMovimento() {
@@ -183,9 +166,9 @@ public class BeefrostTeleOp extends OpMode {
     private void controlarIntake() {
 
         if (gamepad1.x) {
-            Intakes.setPower(1);
-        } else if (gamepad1.y) {
             Intakes.setPower(-1);
+        } else if (gamepad1.y) {
+            Intakes.setPower(1);
         } else {
             Intakes.setPower(0);
         }
@@ -195,9 +178,16 @@ public class BeefrostTeleOp extends OpMode {
 
         if (gamepad1.bWasPressed()) {
             shooterLigado = !shooterLigado;
+            seguirAprilTag = !seguirAprilTag;
         }
         if (shooterLigado) {
-            Shooter.setVelocity(targetVelocity);
+            if (shooterMode) {
+                F = 16.7;
+                Shooter.setVelocity(polenVelocity);
+            } else {
+                F = 18.0;
+                Shooter.setVelocity(nectarVelocity);
+            }
         } else {
             Shooter.setVelocity(0);
         }
@@ -214,14 +204,16 @@ public class BeefrostTeleOp extends OpMode {
         }
     }
 
-    private void PolenPosition() {
+    private void NectarPosition() {
         ExtensorDireito.setPosition(0.45);
         ExtensorEsquerdo.setPosition(0.20);
+        shooterMode = false;
     }
 
-    private void NectarPosition() {
+    private void PolenPosition() {
         ExtensorDireito.setPosition(0.20);
         ExtensorEsquerdo.setPosition(0.70);
+        shooterMode = true;
     }
 
     private void atualizarLimelight() {
@@ -234,31 +226,18 @@ public class BeefrostTeleOp extends OpMode {
 
             if (resultado.isValid()) {
 
-                telemetry.addData(
-                        "TX",
-                        "%.2f",
-                        resultado.getTx());
-
-                telemetry.addData(
-                        "TY",
-                        "%.2f",
-                        resultado.getTy());
-
-                telemetry.addData(
-                        "TA",
-                        "%.2f",
-                        resultado.getTa());
+                telemetry.addData("TX", "%.2f", resultado.getTx());
+                telemetry.addData("TY", "%.2f", resultado.getTy());
+                telemetry.addData("TA", "%.2f", resultado.getTa());
 
                 if (!resultado.getFiducialResults().isEmpty()) {
 
                     for (LLResultTypes.FiducialResult tag :
                             resultado.getFiducialResults()) {
-
                         telemetry.addData("AprilTag ID", tag.getFiducialId());
                     }
 
                 } else {
-
                     telemetry.addData("AprilTag ID", "Nenhuma");
                 }
             }

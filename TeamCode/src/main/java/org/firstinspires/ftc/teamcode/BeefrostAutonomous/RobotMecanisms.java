@@ -2,20 +2,25 @@ package org.firstinspires.ftc.teamcode.BeefrostAutonomous;
 
 
 public abstract class RobotMecanisms extends RobotMovement {
-    void ligarIntakes() {
+    void ligarIntake() {
         Intakes.setPower(1);
     }
-    void desligarIntakes() {
+    void desligarIntake() {
         Intakes.setPower(0);
     }
     void liberarShooter() { Trava.setPosition(0.0); }
     void travarShooter() { Trava.setPosition(1.0); }
-    void PolenPosition() { ExtensorEsquerdo.setPosition(0.5); ExtensorDireito.setPosition(0.5); }
-    void NectarPosition() { ExtensorEsquerdo.setPosition(0.85); ExtensorDireito.setPosition(0.15); }
+    void PolenPosition() { ExtensorEsquerdo.setPosition(0.7); ExtensorDireito.setPosition(0.2); }
+    void NectarPosition() { ExtensorEsquerdo.setPosition(0.2); ExtensorDireito.setPosition(0.45); }
     void ligarShooter() {
-        Shooter.setVelocity(targetVelocity);
+        Shooter.setVelocity(polenVelocity);
+        seguirAprilTag = !seguirAprilTag;
     }
-    void desligarShooter() { Shooter.setVelocity(0); }
+    void desligarShooter() {
+        Shooter.setVelocity(0);
+        seguirAprilTag = !seguirAprilTag;
+    };
+
     void esperar(double segundos) {
         sleep((long)(segundos * 1000));
     }

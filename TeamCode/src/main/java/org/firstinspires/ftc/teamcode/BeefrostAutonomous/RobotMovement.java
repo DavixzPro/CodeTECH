@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.BeefrostAutonomous;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -86,14 +88,22 @@ public abstract class RobotMovement extends RobotConfig {
                             + erroY * Math.cos(headingAtual);
 
 
-            double comandoFrente = erroFrente * 0.035;
-            double comandoLateral = erroLateral * 0.035;
+            double potenciaMaxima = Math.max(Math.abs(frente), Math.abs(lateral));
+            double distanciaDesaceleracao = 15.0;
+            double potenciaMinima = 0.12;
+            double fator = Math.min(1.0, distanciaRestante / distanciaDesaceleracao);
 
-            double potenciaLimite = Math.max(Math.abs(frente), Math.abs(lateral));
-            comandoFrente = limitar(comandoFrente, -potenciaLimite, potenciaLimite);
-            comandoLateral = limitar(comandoLateral, -potenciaLimite, potenciaLimite);
+            double potencia = potenciaMinima + (potenciaMaxima - potenciaMinima) * fator;
 
-            moverMecanum(comandoFrente, comandoLateral);
+            double moduloErro = Math.hypot(erroFrente, erroLateral);
+
+            if (moduloErro > 0) {
+                double comandoFrente = (erroFrente / moduloErro) * potencia;
+                double comandoLateral = (erroLateral / moduloErro) * potencia;
+
+                moverMecanum(comandoFrente, comandoLateral);
+            }
+
         }
 
         parar();
@@ -196,6 +206,71 @@ public abstract class RobotMovement extends RobotConfig {
         FR.setPower(0);
         BL.setPower(0);
         BR.setPower(0);
+    }
+
+    void alinharAprilTag(double potenciaMaxima) {
+
+        double toleranciaTX = 1.0;
+
+        while (opModeIsActive()) {
+
+            limelight.updateRobotOrientation(
+                    pinpoint.getHeading(
+                            org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES));
+
+            LLResult resultado = limelight.getLatestResult();
+
+            if (resultado == null || !resultado.isValid() || resultado.getFiducialResults().isEmpty()) {
+
+                parar();
+
+                telemetry.addLine("Limelight: procurando AprilTag");
+                telemetry.update();
+
+                sleep(20);
+                continue;
+            }
+
+            double tx = resultado.getTx();
+
+            telemetry.addData("AprilTag", "Detectado");
+            telemetry.addData("TX", "%.2f graus", tx);
+            telemetry.update();
+
+            if (Math.abs(tx) <= toleranciaTX) {
+                parar();
+
+                telemetry.addLine("AprilTag alinhado!");
+                telemetry.update();
+
+                break;
+            }
+
+            double rotacao = tx * kP;
+
+            rotacao = Math.max(
+                    -Math.abs(potenciaMaxima),
+                    Math.min(Math.abs(potenciaMaxima), rotacao));
+
+            double potenciaMinima = Math.min(0.12, Math.abs(potenciaMaxima));
+
+            if (Math.abs(rotacao) < potenciaMinima) {
+                rotacao = Math.copySign(potenciaMinima, rotacao);
+            }
+
+            girarParaAlinhar(rotacao);
+            sleep(20);
+        }
+
+        parar();
+    }
+
+    private void girarParaAlinhar(double potencia) {
+
+        FL.setPower(potencia);
+        FR.setPower(-potencia);
+        BL.setPower(potencia);
+        BR.setPower(-potencia);
     }
 
     double limitar(double valor, double minimo, double maximo) {

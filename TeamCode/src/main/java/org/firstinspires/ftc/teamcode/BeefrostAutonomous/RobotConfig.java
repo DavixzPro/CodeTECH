@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.BeefrostAutonomous;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -11,6 +10,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 public abstract class RobotConfig extends LinearOpMode {
 
@@ -24,14 +26,18 @@ public abstract class RobotConfig extends LinearOpMode {
     protected Servo ExtensorEsquerdo;
     protected Servo ExtensorDireito;
     protected GoBildaPinpointDriver pinpoint;
-    protected DistanceSensor SensorDistancia;
+    protected Limelight3A limelight;
+
+    protected double kP = 0.030;
 
     protected static final double TOLERANCIA_CM = 1.0;
     protected static final double TOLERANCIA_GRAUS = 1.0;
 
-    double F = 17.75;
+    double F = 16.7;
     double P = 240.0;
-    double targetVelocity = 1350;
+    double polenVelocity = 1300;
+    double nectarVelocity = 1500;
+    boolean seguirAprilTag;
 
 
     //====================== CONFIGURAÇÃO DO ROBÔ ======================//
@@ -48,7 +54,10 @@ public abstract class RobotConfig extends LinearOpMode {
         ExtensorDireito = hardwareMap.get(Servo.class, "ExtensorDireito");
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        SensorDistancia = hardwareMap.get(DistanceSensor.class, "SensorDistancia");
+
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.pipelineSwitch(0);
+        limelight.start();
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0 , F);
         Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
@@ -67,8 +76,8 @@ public abstract class RobotConfig extends LinearOpMode {
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Pinpoint
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.setOffsets(165, 50, DistanceUnit.MM);
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+        pinpoint.setOffsets(165, 40, DistanceUnit.MM);
         pinpoint.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,
                 GoBildaPinpointDriver.EncoderDirection.FORWARD);
@@ -82,8 +91,8 @@ public abstract class RobotConfig extends LinearOpMode {
         telemetry.addLine("Pinpoint configurado");
         telemetry.addLine("Motores configurados");
         telemetry.addLine("");
-        telemetry.addData("Y", "%.2f in", pinpoint.getPosX(DistanceUnit.INCH));
-        telemetry.addData("X", "%.2f in", pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("Y", "%.2f in", pinpoint.getPosX(DistanceUnit.CM));
+        telemetry.addData("X", "%.2f in", pinpoint.getPosY(DistanceUnit.CM));
         telemetry.addData("Heading", "%.2f°", pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.update();
     }
