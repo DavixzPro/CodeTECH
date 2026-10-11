@@ -10,8 +10,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 public abstract class RobotConfig extends LinearOpMode {
@@ -36,7 +34,7 @@ public abstract class RobotConfig extends LinearOpMode {
     double F = 16.7;
     double P = 240.0;
     double polenVelocity = 1300;
-    double nectarVelocity = 1500;
+    //double nectarVelocity = 1500;
     boolean seguirAprilTag;
 
 
@@ -88,11 +86,10 @@ public abstract class RobotConfig extends LinearOpMode {
     void setTelemetry() {
         telemetry.addLine("=== Beefrost AUTO ===");
         telemetry.addLine("");
-        telemetry.addLine("Pinpoint configurado");
-        telemetry.addLine("Motores configurados");
+        telemetry.addLine("Componentes configurados");
         telemetry.addLine("");
-        telemetry.addData("Y", "%.2f in", pinpoint.getPosX(DistanceUnit.CM));
-        telemetry.addData("X", "%.2f in", pinpoint.getPosY(DistanceUnit.CM));
+        telemetry.addData("Y", "%.2f cm", pinpoint.getPosX(DistanceUnit.CM));
+        telemetry.addData("X", "%.2f cm", pinpoint.getPosY(DistanceUnit.CM));
         telemetry.addData("Heading", "%.2f°", pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.update();
     }

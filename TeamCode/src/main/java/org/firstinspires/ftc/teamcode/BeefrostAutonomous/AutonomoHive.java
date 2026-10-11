@@ -16,7 +16,7 @@ public class AutonomoHive extends RobotMecanisms  {
         waitForStart();
         if (opModeIsActive()) {
 
-            alinharAprilTag(0.2);
+            alinharAprilTag(0.35);
             ligarShooter();
             esperar(1);
             ligarIntake();

@@ -11,8 +11,6 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.robotcore.internal.opengl.shaders.ShaderHelper;
-
 @TeleOp(name = "BeefrostTeleOp")
 public class BeefrostTeleOp extends OpMode {
 
@@ -182,10 +180,8 @@ public class BeefrostTeleOp extends OpMode {
         }
         if (shooterLigado) {
             if (shooterMode) {
-                F = 16.7;
                 Shooter.setVelocity(polenVelocity);
             } else {
-                F = 18.0;
                 Shooter.setVelocity(nectarVelocity);
             }
         } else {
@@ -198,7 +194,6 @@ public class BeefrostTeleOp extends OpMode {
         if (gamepad1.dpad_left) {
             PolenPosition();
         }
-
         if (gamepad1.dpad_right) {
             NectarPosition();
         }
