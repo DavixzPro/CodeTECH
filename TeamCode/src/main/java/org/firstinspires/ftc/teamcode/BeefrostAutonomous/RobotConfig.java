@@ -4,6 +4,7 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -31,9 +32,9 @@ public abstract class RobotConfig extends LinearOpMode {
     protected static final double TOLERANCIA_CM = 1.0;
     protected static final double TOLERANCIA_GRAUS = 1.0;
 
-    double F = 16.7;
-    double P = 240.0;
-    double polenVelocity = 1300;
+    double F = 17;
+    double P = 260.0;
+    double polenVelocity = 1350;
     //double nectarVelocity = 1500;
     boolean seguirAprilTag;
 
@@ -61,6 +62,9 @@ public abstract class RobotConfig extends LinearOpMode {
         Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Shooter.setDirection(DcMotor.Direction.REVERSE);
+        Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        Intakes.setDirection(DcMotor.Direction.REVERSE);
 
         //Motores
         FL.setDirection(DcMotor.Direction.REVERSE);
