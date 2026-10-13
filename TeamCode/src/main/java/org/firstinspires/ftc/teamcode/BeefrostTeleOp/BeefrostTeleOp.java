@@ -206,8 +206,8 @@ public class BeefrostTeleOp extends OpMode {
     }
 
     private void PolenPosition() {
-        ExtensorDireito.setPosition(0.4);
-        ExtensorEsquerdo.setPosition(0.6);
+        ExtensorDireito.setPosition(0.5);
+        ExtensorEsquerdo.setPosition(0.7);
         shooterMode = true;
     }
 

@@ -26,7 +26,7 @@ public class AutonomoHive extends RobotMecanisms  {
             andarTras(0.6, 15);
             andarDireita(0.6, 80);
             andarTras(0.6, 240);
-            andarDireita(0.6, 60);
+            andarDireita(0.6, 20);
 
         }
     }

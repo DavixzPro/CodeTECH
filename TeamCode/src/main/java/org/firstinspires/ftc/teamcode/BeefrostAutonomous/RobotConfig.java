@@ -34,7 +34,7 @@ public abstract class RobotConfig extends LinearOpMode {
 
     double F = 17;
     double P = 260.0;
-    double polenVelocity = 1350;
+    double polenVelocity = 130;
     //double nectarVelocity = 1500;
     boolean seguirAprilTag;
 
