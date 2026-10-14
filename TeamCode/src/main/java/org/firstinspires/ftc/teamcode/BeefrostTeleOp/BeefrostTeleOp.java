@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 @TeleOp(name = "BeefrostTeleOp")
 public class BeefrostTeleOp extends OpMode {
@@ -19,6 +20,7 @@ public class BeefrostTeleOp extends OpMode {
     private DcMotor Intakes;
 
     private Servo ExtensorEsquerdo, ExtensorDireito;
+    private Servo Trava;
 
     private VoltageSensor Battery;
     private Limelight3A limelight;
@@ -29,6 +31,7 @@ public class BeefrostTeleOp extends OpMode {
     double polenVelocity = 1300;
     double nectarVelocity = 1500;
     boolean shooterMode = true;
+    boolean shooterTravado = false;
 
     private boolean seguirAprilTag = false;
 
@@ -45,6 +48,7 @@ public class BeefrostTeleOp extends OpMode {
         Intakes = hardwareMap.get(DcMotor.class, "Intakes");
         ExtensorEsquerdo = hardwareMap.get(Servo.class, "ExtensorEsquerdo");
         ExtensorDireito = hardwareMap.get(Servo.class, "ExtensorDireito");
+        Trava = hardwareMap.get(Servo.class, "Trava");
         Battery = hardwareMap.voltageSensor.iterator().next();
 
         FL.setDirection(DcMotor.Direction.REVERSE);
@@ -60,7 +64,6 @@ public class BeefrostTeleOp extends OpMode {
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0 , F);
         Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        Shooter.setDirection(DcMotor.Direction.REVERSE);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(0);
@@ -81,7 +84,7 @@ public class BeefrostTeleOp extends OpMode {
         controlarMovimento();
         controlarIntake();
         controlarShooter();
-        controlarExtensores();
+        controlarServos();
         atualizarLimelight();
 
         //tags
@@ -187,9 +190,18 @@ public class BeefrostTeleOp extends OpMode {
         } else {
             Shooter.setVelocity(0);
         }
+
+        if (gamepad1.aWasPressed()) {
+            shooterTravado = !shooterTravado;
+        }
+        if (shooterTravado) {
+            fechar();
+        } else {
+            abrir();
+        }
     }
 
-    private void controlarExtensores() {
+    private void controlarServos() {
 
         if (gamepad1.dpad_left) {
             PolenPosition();
@@ -207,8 +219,15 @@ public class BeefrostTeleOp extends OpMode {
 
     private void PolenPosition() {
         ExtensorDireito.setPosition(0.5);
-        ExtensorEsquerdo.setPosition(0.7);
+        ExtensorEsquerdo.setPosition(0.5);
         shooterMode = true;
+    }
+
+    private void abrir() {
+        Trava.setPosition(0.2);
+    }
+    private void fechar() {
+        Trava.setPosition(0.4);
     }
 
     private void atualizarLimelight() {

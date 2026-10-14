@@ -95,15 +95,44 @@ public abstract class RobotMovement extends RobotConfig {
 
             double potencia = potenciaMinima + (potenciaMaxima - potenciaMinima) * fator;
 
-            double moduloErro = Math.hypot(erroFrente, erroLateral);
+            double moduloErro = Math.hypot(
+                    erroFrente,
+                    erroLateral
+            );
 
             if (moduloErro > 0) {
-                double comandoFrente = (erroFrente / moduloErro) * potencia;
-                double comandoLateral = (erroLateral / moduloErro) * potencia;
 
-                moverMecanum(comandoFrente, comandoLateral);
+                double comandoFrente =
+                        (erroFrente / moduloErro) * potencia;
+
+                double comandoLateral =
+                        (erroLateral / moduloErro) * potencia;
+
+                // Orientação atual em graus
+                double headingAtualGraus =
+                        pinpoint.getHeading(AngleUnit.DEGREES);
+
+                // Orientação desejada em graus
+                double headingAlvoGraus =
+                        Math.toDegrees(headingInicial);
+
+                // Erro de orientação
+                double erroHeading = normalizarAngulo(
+                        headingAlvoGraus - headingAtualGraus
+                );
+
+                // Correção proporcional
+                double rotacao = erroHeading * kPHeading;
+
+                // Limita a correção de rotação
+                rotacao = limitar(
+                        rotacao,
+                        -ROTACAO_MAXIMA,
+                        ROTACAO_MAXIMA
+                );
+
+                moverMecanum(comandoFrente, comandoLateral, rotacao);
             }
-
         }
 
         parar();
@@ -172,15 +201,26 @@ public abstract class RobotMovement extends RobotConfig {
         sleep(100);
     }
 
-    void moverMecanum(double frente, double lateral) {
+    void moverMecanum(
+            double frente,
+            double lateral,
+            double rotacao) {
 
-        double fl = frente + lateral;
-        double fr = frente - lateral;
-        double bl = frente - lateral;
-        double br = frente + lateral;
+        double fl = frente + lateral + rotacao;
+        double fr = frente - lateral - rotacao;
+        double bl = frente - lateral + rotacao;
+        double br = frente + lateral - rotacao;
 
-        double max = Math.max(1.0, Math.max(Math.abs(fl),
-                Math.max(Math.abs(fr), Math.max(Math.abs(bl), Math.abs(br)))));
+        double max = Math.max(
+                1.0,
+                Math.max(
+                        Math.abs(fl),
+                        Math.max(
+                                Math.abs(fr),
+                                Math.max(Math.abs(bl), Math.abs(br))
+                        )
+                )
+        );
 
         FL.setPower(fl / max);
         FR.setPower(fr / max);

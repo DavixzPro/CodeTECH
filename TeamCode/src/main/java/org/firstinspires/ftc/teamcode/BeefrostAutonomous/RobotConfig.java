@@ -29,8 +29,10 @@ public abstract class RobotConfig extends LinearOpMode {
 
     protected double kP = 0.030;
 
-    protected static final double TOLERANCIA_CM = 1.0;
+    protected static double TOLERANCIA_CM = 1.0;
     protected static final double TOLERANCIA_GRAUS = 1.0;
+    protected double kPHeading = 0.015;
+    protected double ROTACAO_MAXIMA = 0.25;
 
     double F = 17;
     double P = 260.0;
