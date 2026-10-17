@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import java.util.ArrayDeque;
@@ -124,14 +122,14 @@ public class BeefrostMechanisms {
             tipo = BolaTipo.POLLEN;
         }
 
-        telemetry.addData("CS1 Red", red1);
-        telemetry.addData("CS2 Red", red2);
-        telemetry.addData("CS1 Blue", blue1);
-        telemetry.addData("CS2 Blue", blue2);
+        opMode.telemetry.addData("CS1 Red", red1);
+        opMode.telemetry.addData("CS2 Red", red2);
+        opMode.telemetry.addData("CS1 Blue", blue1);
+        opMode.telemetry.addData("CS2 Blue", blue2);
 
-        telemetry.addData("Both red", bothRed);
-        telemetry.addData("Both blue", bothBlue);
-        telemetry.addData("Detected type", tipo);
+        opMode.telemetry.addData("Both red", bothRed);
+        opMode.telemetry.addData("Both blue", bothBlue);
+        opMode.telemetry.addData("Detected type", tipo);
 
         return tipo;
      }
