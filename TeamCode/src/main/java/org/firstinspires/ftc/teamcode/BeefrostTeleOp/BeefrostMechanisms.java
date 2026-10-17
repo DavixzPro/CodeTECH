@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import java.util.ArrayDeque;
@@ -9,6 +11,12 @@ public class BeefrostMechanisms {
 
     private final BeefrostConfig robot;
     private final OpMode opMode;
+
+    private enum BolaTipo {
+        NECTAR,
+        POLLEN,
+        UNKNOWN
+    }
 
     public BeefrostMechanisms(
             BeefrostConfig robot,
@@ -103,15 +111,29 @@ public class BeefrostMechanisms {
         boolean red2 = isRed(robot.CS2);
         boolean blue2 = isBlue(robot.CS2);
 
+        boolean bothRed = red1 && red2;
+        boolean bothBlue = blue1 && blue2;
+
+        BolaTipo tipo;
+
         if (red1 && red2) {
-            return BolaTipo.NECTAR;
+            tipo =  BolaTipo.NECTAR;
+        } else if (blue1 && blue2 ) {
+            tipo = BolaTipo.NECTAR;
+        } else {
+            tipo = BolaTipo.POLLEN;
         }
 
-        if (blue1 && blue2 ) {
-            return BolaTipo.NECTAR;
-        }
+        telemetry.addData("CS1 Red", red1);
+        telemetry.addData("CS2 Red", red2);
+        telemetry.addData("CS1 Blue", blue1);
+        telemetry.addData("CS2 Blue", blue2);
 
-        return BolaTipo.POLLEN;
+        telemetry.addData("Both red", bothRed);
+        telemetry.addData("Both blue", bothBlue);
+        telemetry.addData("Detected type", tipo);
+
+        return tipo;
      }
     private void controlarServos() {
         BolaTipo tipo = detectarTipo();
