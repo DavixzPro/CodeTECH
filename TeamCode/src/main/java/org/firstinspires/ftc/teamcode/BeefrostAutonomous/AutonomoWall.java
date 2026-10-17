@@ -17,20 +17,26 @@ public class AutonomoWall extends RobotMecanisms  {
         if (opModeIsActive()) {
 
 
-            andarFrente(70, 50);
-            andarEsquerda(70, 110);
-            girarDireita(50, 90);
-            andarEsquerda(70, 80);
+            andarFrente(0.6, 50);
+            andarEsquerda(6.0, 97);
+            andarFrente(0.6, 80);
             esperar(1);
-            girarDireita(50,180);
+            girarEsquerda(0.5,90);
+            esperar(1);
+            andarFrente(10,10);
+            alinharAprilTag(0.3);
+            liberarShooter();
             ligarShooter();
-            esperar(5);
-            ligarIntake();
             esperar(2);
+            ligarIntake();
+            esperar(3);
             desligarIntake();
             desligarShooter();
-            andarEsquerda(80, 125);
-            girarEsquerda(50,90);
+            andarTras(40,20);
+            esperar(1);
+            andarEsquerda(0.7, 125);
+            girarDireita(0.5,90);
+
         }
     }
 

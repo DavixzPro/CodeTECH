@@ -8,10 +8,16 @@ public abstract class RobotMecanisms extends RobotMovement {
     void desligarIntake() {
         Intakes.setPower(0);
     }
-    void liberarShooter() { Trava.setPosition(0.0); }
-    void travarShooter() { Trava.setPosition(1.0); }
-    void PolenPosition() { ExtensorEsquerdo.setPosition(0.6); ExtensorDireito.setPosition(0.4); }
-    void NectarPosition() { ExtensorEsquerdo.setPosition(0.3); ExtensorDireito.setPosition(0.7); }
+    void travarShooter() { Trava.setPosition(0.1); }
+    void liberarShooter() { Trava.setPosition(0.4); }
+    void PolenPosition() {
+        ExtensorDireito.setPosition(0.45);
+        ExtensorEsquerdo.setPosition(0.55);
+    }
+    void NectarPosition() {
+        ExtensorDireito.setPosition(0.7);
+        ExtensorEsquerdo.setPosition(0.3);
+    }
     void ligarShooter() {
         Shooter.setVelocity(polenVelocity);
         seguirAprilTag = !seguirAprilTag;

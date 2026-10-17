@@ -1,265 +1,108 @@
 package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+
 
 @TeleOp(name = "BeefrostTeleOp")
 public class BeefrostTeleOp extends OpMode {
 
-    private DcMotor FL, FR, BL, BR;
-    private DcMotorEx Shooter;
-    private DcMotor Intakes;
-
-    private Servo ExtensorEsquerdo, ExtensorDireito;
-    private Servo Trava;
-
-    private VoltageSensor Battery;
-    private Limelight3A limelight;
-
-    double F = 16.7;
-    double P = 240.0;
-    boolean shooterLigado;
-    double polenVelocity = 1300;
-    double nectarVelocity = 1500;
-    boolean shooterMode = true;
-    boolean shooterTravado = false;
-
-    private boolean seguirAprilTag = false;
-
-    private double kP = 0.030;
+    private BeefrostConfig robot;
+    private BeefrostMovement movement;
+    private BeefrostMechanisms mechanisms;
 
     @Override
     public void init() {
 
-        FL = hardwareMap.get(DcMotor.class, "FL");
-        FR = hardwareMap.get(DcMotor.class, "FR");
-        BL = hardwareMap.get(DcMotor.class, "BL");
-        BR = hardwareMap.get(DcMotor.class, "BR");
-        Shooter = hardwareMap.get(DcMotorEx.class, "Shooter");
-        Intakes = hardwareMap.get(DcMotor.class, "Intakes");
-        ExtensorEsquerdo = hardwareMap.get(Servo.class, "ExtensorEsquerdo");
-        ExtensorDireito = hardwareMap.get(Servo.class, "ExtensorDireito");
-        Trava = hardwareMap.get(Servo.class, "Trava");
-        Battery = hardwareMap.voltageSensor.iterator().next();
+        robot = new BeefrostConfig();
+        robot.init(hardwareMap);
+        movement = new BeefrostMovement(robot, this);
+        mechanisms = new BeefrostMechanisms(robot, this);
 
-        FL.setDirection(DcMotor.Direction.REVERSE);
-        BL.setDirection(DcMotor.Direction.FORWARD);
-        FR.setDirection(DcMotor.Direction.REVERSE);
-        BR.setDirection(DcMotor.Direction.REVERSE);
-
-        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0 , F);
-        Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-        Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
-
-        telemetry.addLine("BEEFROST iniciado");
+        telemetry.addLine("========== BEEFROST ==========");
+        telemetry.addLine("Inicializacao concluida");
         telemetry.update();
-
-        PolenPosition();
     }
 
     @Override
     public void start() {
-        limelight.start();
+        movement.iniciarLimelight();
+        mechanisms.FlowerOn();
     }
 
     @Override
     public void loop() {
-        controlarMovimento();
-        controlarIntake();
-        controlarShooter();
-        controlarServos();
-        atualizarLimelight();
 
-        //tags
-        telemetry.addData("AprilTag Assist", seguirAprilTag ? "ATIVO" : "DESATIVADO");
-        telemetry.addData("Bateria", "%.2f V", Battery.getVoltage());
+        movement.atualizar();
+        mechanisms.atualizar();
+        atualizarTelemetria();
+    }
+
+    private void atualizarTelemetria() {
+
+        telemetry.addLine("========== BEEFROST ==========");
+
+
+        ////////////////////////////////// Shooter /////////////////////////////////////////
+
+
+        String modo = robot.shooterMode ? "POLEN" : "NECTAR";
+        String estado = robot.shooterLigado ? "LIGADO" : "DESLIGADO";
+        String trava = robot.shooterTravado ? "TRAVADA" : "LIBERADA";
+
+        double velocidadeAlvo = robot.shooterLigado
+                ? (robot.shooterMode ? robot.polenVelocity : robot.nectarVelocity) : 0;
+
+        telemetry.addData("SHOOTER", "%s | %s | Trava: %s", estado, modo, trava);
+
+        telemetry.addData("Velocidade alvo", "%.0f ticks/s", velocidadeAlvo);
+
+
+        ////////////////////////////////// Limelight ///////////////////////////////////////
+
+
+        LLResult resultado = movement.getResultadoLimelight();
+
+        String estadoLimelight;
+
+        if (resultado == null) {
+            estadoLimelight = "AGUARDANDO";
+
+        } else if (movement.isTagDetectada()) {
+            estadoLimelight = "TAG DETECTADA";
+
+        } else if (resultado.isValid()) {
+            estadoLimelight = "ALVO SEM TAG";
+
+        } else {
+            estadoLimelight = "SEM ALVO";
+        }
+
+        telemetry.addData("LIMELIGHT",
+                "%s | Assist: %s", estadoLimelight, robot.seguirAprilTag ? "ON" : "OFF");
+
+        if (movement.isTagDetectada()) {
+            telemetry.addData(
+                    "TX / TY",
+                    "%.1f / %.1f",
+                    resultado.getTx(),
+                    resultado.getTy());
+        }
+
+        //////////////////////////////////// Bateria //////////////////////////////////////
+
+        telemetry.addData("BATERIA", "%.2f V", robot.Battery.getVoltage());
+        telemetry.addLine("==============================");
         telemetry.update();
-    }
-
-    private void controlarMovimento() {
-
-        double y = -gamepad1.left_stick_y;
-        double x = gamepad1.left_stick_x;
-        double rx = 0;
-
-        if (seguirAprilTag) {
-
-            LLResult resultado = limelight.getLatestResult();
-
-            if (resultado != null &&
-                    resultado.isValid() &&
-                    !resultado.getFiducialResults().isEmpty()) {
-
-                double tx = resultado.getTx();
-
-                rx = tx * kP;
-
-                if (rx > 1) {
-                    rx = 1;
-                }
-
-                if (rx < -1) {
-                    rx = -1;
-                }
-
-            } else {
-
-                if (gamepad1.left_trigger > 0.05) {
-                    rx = -gamepad1.left_trigger;
-                }
-
-                if (gamepad1.right_trigger > 0.05) {
-                    rx = gamepad1.right_trigger;
-                }
-            }
-
-        } else {
-
-            if (gamepad1.left_trigger > 0.05) {
-                rx = -gamepad1.left_trigger;
-            }
-
-            if (gamepad1.right_trigger > 0.05) {
-                rx = gamepad1.right_trigger;
-            }
-        }
-
-        double fl = y + x + rx;
-        double fr = y - x - rx;
-        double bl = y - x + rx;
-        double br = y + x - rx;
-
-        double max = Math.max(
-                Math.max(Math.abs(fl), Math.abs(fr)),
-                Math.max(Math.abs(bl), Math.abs(br))
-        );
-
-        if (max > 1.0) {
-            fl /= max;
-            fr /= max;
-            bl /= max;
-            br /= max;
-        }
-
-        FL.setPower(fl);
-        FR.setPower(fr);
-        BL.setPower(bl);
-        BR.setPower(br);
-    }
-
-    private void controlarIntake() {
-
-        if (gamepad1.x) {
-            Intakes.setPower(-1);
-        } else if (gamepad1.y) {
-            Intakes.setPower(1);
-        } else {
-            Intakes.setPower(0);
-        }
-    }
-
-    private void controlarShooter() {
-
-        if (gamepad1.bWasPressed()) {
-            shooterLigado = !shooterLigado;
-            seguirAprilTag = !seguirAprilTag;
-        }
-        if (shooterLigado) {
-            if (shooterMode) {
-                Shooter.setVelocity(polenVelocity);
-            } else {
-                Shooter.setVelocity(nectarVelocity);
-            }
-        } else {
-            Shooter.setVelocity(0);
-        }
-
-        if (gamepad1.aWasPressed()) {
-            shooterTravado = !shooterTravado;
-        }
-        if (shooterTravado) {
-            fechar();
-        } else {
-            abrir();
-        }
-    }
-
-    private void controlarServos() {
-
-        if (gamepad1.dpad_left) {
-            PolenPosition();
-        }
-        if (gamepad1.dpad_right) {
-            NectarPosition();
-        }
-    }
-
-    private void NectarPosition() {
-        ExtensorDireito.setPosition(0.7);
-        ExtensorEsquerdo.setPosition(0.3);
-        shooterMode = false;
-    }
-
-    private void PolenPosition() {
-        ExtensorDireito.setPosition(0.5);
-        ExtensorEsquerdo.setPosition(0.5);
-        shooterMode = true;
-    }
-
-    private void abrir() {
-        Trava.setPosition(0.2);
-    }
-    private void fechar() {
-        Trava.setPosition(0.4);
-    }
-
-    private void atualizarLimelight() {
-
-        LLResult resultado = limelight.getLatestResult();
-
-        if (resultado != null) {
-
-            telemetry.addData("Limelight", resultado.isValid() ? "Detectando" : "Sem alvo");
-
-            if (resultado.isValid()) {
-
-                telemetry.addData("TX", "%.2f", resultado.getTx());
-                telemetry.addData("TY", "%.2f", resultado.getTy());
-                telemetry.addData("TA", "%.2f", resultado.getTa());
-
-                if (!resultado.getFiducialResults().isEmpty()) {
-
-                    for (LLResultTypes.FiducialResult tag :
-                            resultado.getFiducialResults()) {
-                        telemetry.addData("AprilTag ID", tag.getFiducialId());
-                    }
-
-                } else {
-                    telemetry.addData("AprilTag ID", "Nenhuma");
-                }
-            }
-        }
     }
 
     @Override
     public void stop() {
-        limelight.stop();
+
+        movement.parar();
+        robot.Shooter.setPower(0);
+        robot.Intakes.setPower(0);
+
     }
 }

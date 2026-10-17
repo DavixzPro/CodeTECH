@@ -18,15 +18,14 @@ public class AutonomoHive extends RobotMecanisms  {
 
             alinharAprilTag(0.3);
             ligarShooter();
+            liberarShooter();
             esperar(2);
             ligarIntake();
-            esperar(3);
+            esperar(5);
             desligarIntake();
             desligarShooter();
-            andarTras(0.6, 15);
-            andarDireita(0.6, 80);
-            andarTras(0.6, 240);
-            andarDireita(0.6, 55);
+            andarDiagonalTrasDireita(0.6, 170);
+            andarTras(0.5, 120);
 
         }
     }

@@ -7,7 +7,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public abstract class RobotMovement extends RobotConfig {
 
-    //======================= MOVIMENTO E GIRO =========================//
+    //======================= MOVIMENTOS E GIRO =========================//
     void andarFrente(double potencia, double distanciaCm) {
         moverRelativo(potencia, 0, distanciaCm, "FRENTE");
     }
@@ -19,6 +19,18 @@ public abstract class RobotMovement extends RobotConfig {
     }
     void andarEsquerda(double potencia, double distanciaCm) {
         moverRelativo(0, -potencia, distanciaCm, "ESQUERDA");
+    }
+    void andarDiagonalFrenteDireita(double potencia, double distanciaCm) {
+        moverRelativo(potencia, potencia, distanciaCm, "DIAGONAL FRENTE-DIREITA");
+    }
+    void andarDiagonalFrenteEsquerda(double potencia, double distanciaCm) {
+        moverRelativo(potencia, -potencia, distanciaCm, "DIAGONAL FRENTE-ESQUERDA");
+    }
+    void andarDiagonalTrasDireita(double potencia, double distanciaCm) {
+        moverRelativo(-potencia, potencia, distanciaCm, "DIAGONAL TRÁS-DIREITA");
+    }
+    void andarDiagonalTrasEsquerda(double potencia, double distanciaCm) {
+        moverRelativo(-potencia, -potencia, distanciaCm, "DIAGONAL TRÁS-ESQUERDA");
     }
 
     void moverRelativo(
@@ -131,7 +143,7 @@ public abstract class RobotMovement extends RobotConfig {
                         ROTACAO_MAXIMA
                 );
 
-                moverMecanum(comandoFrente, comandoLateral, rotacao);
+                moverMecanum(comandoFrente, comandoLateral, 0);
             }
         }
 
@@ -250,7 +262,7 @@ public abstract class RobotMovement extends RobotConfig {
 
     void alinharAprilTag(double potenciaMaxima) {
 
-        double toleranciaTX = 1.0;
+        double toleranciaTX = 0.7;
 
         while (opModeIsActive()) {
 

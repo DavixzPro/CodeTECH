@@ -27,16 +27,20 @@ public abstract class RobotConfig extends LinearOpMode {
     protected GoBildaPinpointDriver pinpoint;
     protected Limelight3A limelight;
 
-    protected double kP = 0.030;
-
+    // Tolerâncias de chegada
     protected static double TOLERANCIA_CM = 1.0;
     protected static final double TOLERANCIA_GRAUS = 1.0;
-    protected double kPHeading = 0.015;
+    protected double kP = 0.030;
+    protected double kPHeading = 0.012;
     protected double ROTACAO_MAXIMA = 0.25;
 
-    double F = 17;
+    protected boolean Flower = false;
+
+
+
+    double F = 16.7;
     double P = 260.0;
-    double polenVelocity = 130;
+    double polenVelocity = 1250;
     //double nectarVelocity = 1500;
     boolean seguirAprilTag;
 
@@ -63,7 +67,6 @@ public abstract class RobotConfig extends LinearOpMode {
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0 , F);
         Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        Shooter.setDirection(DcMotor.Direction.REVERSE);
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         Intakes.setDirection(DcMotor.Direction.REVERSE);
