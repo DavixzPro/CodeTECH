@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import java.util.ArrayDeque;
-import java.util.Queue;
+import java.util.Deque;
 
 public class BeefrostMechanisms {
 
@@ -14,6 +14,103 @@ public class BeefrostMechanisms {
         NECTAR,
         POLLEN,
         UNKNOWN
+    }
+
+    private final Deque<BolaTipo> shootingQueue = new ArrayDeque<>();
+
+    private enum IntakeState {
+        WAIT_CS1,
+        WAIT_CS2,
+        WAIT_CLEAR_CS1
+    }
+
+    private IntakeState intakeState = IntakeState.WAIT_CS1;
+    private BolaTipo pendingBall = BolaTipo.UNKNOWN;
+    private long intakeStateStartedAt;
+    private static final long SENSOR_TIMEOUT_MS = 1500;
+
+    private enum ShotState {
+        IDLE,
+        POSITIONING,
+        RTS,
+        WAITING_FOR_CONFIRMATION
+    }
+
+    private ShotState shotState = ShotState.IDLE;
+    private boolean shooterSensorWasActive = false;
+
+    private void updateIntakeQueue() {
+        BolaTipo tipo1 = classificarSensor(robot.CS1);
+        BolaTipo tipo2 = classificarSensor(robot.CS2);
+
+        switch (intakeState) {
+            case WAIT_CS1:
+                if (tipo1 != BolaTipo.UNKNOWN) {
+                    pendingBall = tipo1;
+                    intakeStateStartedAt = System.currentTimeMillis();
+                    intakeState = intakeState.WAIT_CS2;
+                }
+                break;
+            case WAIT_CS2:
+                if (tipo2 == pendingBall) {
+                    shootingQueue.offerLast(pendingBall);
+
+                    opMode.telemetry.addData(
+                            "Added to queue", pendingBall
+                    );
+
+                    pendingBall = BolaTipo.UNKNOWN;
+                    intakeState = IntakeState.WAIT_CLEAR_CS1;
+                } else if (System.currentTimeMillis()
+                        - intakeStateStartedAt > SENSOR_TIMEOUT_MS) {
+                    pendingBall = BolaTipo.UNKNOWN;
+                    intakeState = IntakeState.WAIT_CS1;
+                }
+                break;
+            case WAIT_CLEAR_CS1:
+                if (tipo1 == BolaTipo.UNKNOWN) {
+                    intakeState = IntakeState.WAIT_CS1;
+                }
+                break;
+        }
+        opMode.telemetry.addData("CS1 type", tipo1);
+        opMode.telemetry.addData("CS2 type", tipo2);
+    }
+
+    private void updateShootingFSM() {
+        switch (shotState) {
+            case IDLE:
+                if (!shootingQueue.isEmpty()) {
+                    shotState = ShotState.POSITIONING;
+                }
+                break;
+
+            case POSITIONING: {
+                BolaTipo next = shootingQueue.peekFirst();
+
+                if (next == BolaTipo.NECTAR) {
+                    NectarPosition();
+                    shotState = ShotState.RTS;
+                } else if (next == BolaTipo.POLLEN) {
+                    PolenPosition();
+                    shotState = ShotState.RTS;
+                } else {
+                    shotState = ShotState.IDLE;
+                }
+                break;
+            }
+
+            case RTS:
+                if (opMode.gamepad1.y) {
+                    shotState = ShotState.WAITING_FOR_CONFIRMATION;
+                }
+                break;
+
+            case WAITING_FOR_CONFIRMATION:
+                break;
+        }
+
+        opMode.telemetry.addData("Next piece", shootingQueue.peekFirst());
     }
 
     public BeefrostMechanisms(
@@ -28,9 +125,20 @@ public class BeefrostMechanisms {
 
         controlarShooter();
         controlarIntake();
+        updateIntakeQueue();
+        updateShootingFSM();
+
         controlarServos();
 
+        opMode.telemetry.addData("Queue", shootingQueue);
+        opMode.telemetry.addData("Intake state", intakeState);
+        opMode.telemetry.addData("Shot state", shotState);
+        opMode.telemetry.update();
     }
+    private boolean isShooterSensorActive() {
+        return classificarSensor(robot.CS3) != BolaTipo.UNKNOWN;
+    }
+
 
     private void controlarShooter() {
 
@@ -101,7 +209,13 @@ public class BeefrostMechanisms {
         return (b > r * 1.5 && b > g * 1.5);
     }
 
-    private final Queue<BolaTipo> shootingQueue = new ArrayDeque<>();
+    public boolean isYellow(ColorSensor sensor) {
+        int r = sensor.red();
+        int g = sensor.green();
+        int b = sensor.blue();
+
+        return (r > b * 1.5 && g > b * 1.5);
+    }
 
     private BolaTipo detectarTipo() {
         boolean red1 = isRed(robot.CS1);
@@ -132,6 +246,16 @@ public class BeefrostMechanisms {
         opMode.telemetry.addData("Detected type", tipo);
 
         return tipo;
+     }
+
+     private BolaTipo classificarSensor(ColorSensor sensor) {
+        if (isRed(sensor) || isBlue(sensor)) {
+            return BolaTipo.NECTAR;
+        } else if (isYellow(sensor)) {
+            return BolaTipo.POLLEN;
+        } else {
+            return BolaTipo.POLLEN;
+        }
      }
     private void controlarServos() {
         BolaTipo tipo = detectarTipo();
