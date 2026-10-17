@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public class BeefrostMechanisms {
 
@@ -67,14 +70,60 @@ public class BeefrostMechanisms {
 
     }
 
-    private void controlarServos() {
+//    private void controlarServos() {
+//
+//        if (opMode.gamepad1.dpad_left) {
+//            PolenPosition();
+//        }
+//
+//        if (opMode.gamepad1.dpad_right) {
+//            NectarPosition();
+//        }
+//    }
+    public boolean isRed(ColorSensor sensor) {
+        int r = sensor.red();
+        int g = sensor.green();
+        int b = sensor.blue();
 
-        if (opMode.gamepad1.dpad_left) {
-            PolenPosition();
+        return (r > g * 1.5 && r > b * 1.5);
+    }
+    public boolean isBlue(ColorSensor sensor) {
+        int r = sensor.red();
+        int g = sensor.green();
+        int b = sensor.blue();
+
+        return (b > r * 1.5 && b > g * 1.5);
+    }
+
+    private final Queue<BolaTipo> shootingQueue = new ArrayDeque<>();
+
+    private BolaTipo detectarTipo() {
+        boolean red1 = isRed(robot.CS1);
+        boolean blue1 = isBlue(robot.CS1);
+        boolean red2 = isRed(robot.CS2);
+        boolean blue2 = isBlue(robot.CS2);
+
+        if (red1 && red2) {
+            return BolaTipo.NECTAR;
         }
 
-        if (opMode.gamepad1.dpad_right) {
-            NectarPosition();
+        if (blue1 && blue2 ) {
+            return BolaTipo.NECTAR;
+        }
+
+        return BolaTipo.POLLEN;
+     }
+    private void controlarServos() {
+        BolaTipo tipo = detectarTipo();
+        switch (tipo) {
+            case NECTAR:
+                NectarPosition();
+                break;
+            case POLLEN:
+                PolenPosition();
+                break;
+            case UNKNOWN:
+                break;
         }
     }
 
@@ -103,16 +152,6 @@ public class BeefrostMechanisms {
 
     }
 
-    private void liberarShooter() {
-
-        robot.Trava.setPosition(0.4);
-        robot.FlowerSensor.enableLed(true);
-
-    }
-    private void travarShooter() {
-
-        robot.Trava.setPosition(0.2);
-        robot.FlowerSensor.enableLed(false);
-
-    }
+    private void liberarShooter() { robot.Trava.setPosition(0.4); }
+    private void travarShooter() { robot.Trava.setPosition(0.2); }
 }

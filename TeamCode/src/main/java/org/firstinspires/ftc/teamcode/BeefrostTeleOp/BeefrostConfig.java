@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class BeefrostConfig {
 
-
     public DcMotor FL, FR, BL, BR;
     public DcMotorEx Shooter;
     public DcMotor Intakes;
@@ -25,9 +24,9 @@ public class BeefrostConfig {
 
     public VoltageSensor Battery;
     public Limelight3A limelight;
-    public ColorSensor FlowerSensor;
     public ColorSensor CS1;
     public ColorSensor CS2;
+    public ColorSensor CS3;
 
     public final double P = 270.0;
     public final double F = 16.7;
@@ -60,9 +59,11 @@ public class BeefrostConfig {
         Lily = hardwareMap.get(Servo.class,"Lily");
 
         Battery = hardwareMap.voltageSensor.iterator().next();
-        FlowerSensor = hardwareMap.get(ColorSensor.class, "FlowerSensor");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
+        CS1 = hardwareMap.get(ColorSensor.class, "SensorCor1");
+        CS2 = hardwareMap.get(ColorSensor.class, "SensorCor2");
+        CS3 = hardwareMap.get(ColorSensor.class, "SensorCor3");
 
         FL.setDirection(DcMotor.Direction.REVERSE);
         FR.setDirection(DcMotor.Direction.REVERSE);
@@ -79,6 +80,5 @@ public class BeefrostConfig {
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         limelight.pipelineSwitch(0);
-        FlowerSensor.enableLed(false);
-    }
+       }
 }
