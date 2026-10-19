@@ -9,23 +9,26 @@ public class AutonomoHive extends RobotMecanisms  {
     public void runOpMode() {
 
         ConfigureRobot();
-        PolenPosition();
+        NectarPosition();
         travarShooter();
         setTelemetry();
 
         waitForStart();
         if (opModeIsActive()) {
 
+            PolenPosition();
             alinharAprilTag(0.3);
             ligarShooter();
             liberarShooter();
-            esperar(2);
+            andarTras(0.5, 5);
+            esperar(1);
             ligarIntake();
-            esperar(5);
+            esperar(3);
             desligarIntake();
             desligarShooter();
-            andarDiagonalTrasDireita(0.6, 170);
-            andarTras(0.5, 120);
+            andarDiagonalTrasDireita(0.7, 110);
+            andarTras(0.5, 165);
+            andarDireita(0.4, 40);
 
         }
     }

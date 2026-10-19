@@ -37,11 +37,10 @@ public abstract class RobotConfig extends LinearOpMode {
     protected boolean Flower = false;
 
 
-
-    double F = 16.7;
-    double P = 260.0;
-    double polenVelocity = 1250;
-    //double nectarVelocity = 1500;
+    double F = 15.42;
+    double P = 246.3;
+    double polenVelocity = 1230;
+    //double nectarVelocity = 1300;
     boolean seguirAprilTag;
 
 

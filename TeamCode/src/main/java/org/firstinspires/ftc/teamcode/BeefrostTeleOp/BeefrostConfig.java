@@ -28,10 +28,11 @@ public class BeefrostConfig {
     public ColorSensor CS2;
     public ColorSensor CS3;
 
-    public final double P = 270.0;
-    public final double F = 16.7;
-    public final double polenVelocity = 1200;
-    public final double nectarVelocity = 1250;
+    public final double P = 246.3;
+    public final double F = 15.42;
+    public final double polenVelocity = 1230;
+    public final double nectarVelocity = 1300;
+    public boolean alternarExtensao = false;
 
     public final double kP = 0.030;
 
