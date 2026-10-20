@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -172,25 +175,29 @@ public class BeefrostMechanisms {
 
     private void controlarIntake() {
 
+        double distance = robot.DSD.getDistance(DistanceUnit.CM);
+        opMode.telemetry.addData("Distance:", "%.2f", distance);
+
         if (opMode.gamepad1.x) {
             robot.Intakes.setPower(-1);
+            robot.CS1.enableLed(true);
         } else if (opMode.gamepad1.y) {
             robot.Intakes.setPower(1);
+            robot.CS1.enableLed(true);
         } else {
             robot.Intakes.setPower(0);
+            robot.CS1.enableLed(false);
         }
 
         if (opMode.gamepad1.aWasPressed()) {
             robot.Flower = !robot.Flower;
         }
 
-        if (robot.Flower) {
+        if (robot.Flower && distance < 60) {
             FlowerOn();
         } else {
             FlowerOff();
         }
-
-
 
     }
 

@@ -29,6 +29,7 @@ public class BeefrostTeleOp extends OpMode {
     public void start() {
         movement.iniciarLimelight();
         mechanisms.FlowerOff();
+        mechanisms.PolenPosition();
     }
 
     @Override

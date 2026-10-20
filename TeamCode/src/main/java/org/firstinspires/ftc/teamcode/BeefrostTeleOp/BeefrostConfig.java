@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -27,6 +28,8 @@ public class BeefrostConfig {
     public ColorSensor CS1;
     public ColorSensor CS2;
     public ColorSensor CS3;
+    public DistanceSensor DSD;
+    public DistanceSensor DSE;
 
     public final double P = 246.3;
     public final double F = 15.42;
@@ -65,6 +68,9 @@ public class BeefrostConfig {
         CS1 = hardwareMap.get(ColorSensor.class, "SensorCor1");
         CS2 = hardwareMap.get(ColorSensor.class, "SensorCor2");
         CS3 = hardwareMap.get(ColorSensor.class, "SensorCor3");
+
+        DSD = hardwareMap.get(DistanceSensor.class, "DSD");
+        DSE = hardwareMap.get(DistanceSensor.class, "DSE");
 
         FL.setDirection(DcMotor.Direction.REVERSE);
         FR.setDirection(DcMotor.Direction.REVERSE);
