@@ -31,9 +31,9 @@ public class BeefrostRedConfig {
     public DistanceSensor DSE;
 
     public final double P = 246.3;
-    public final double F = 14;
-    public final double polenVelocity = 950;
-    public final double nectarVelocity = 1150;
+    public final double F = 15.42;
+    public final double polenVelocity = 1210;
+    public final double nectarVelocity = 1260;
     public boolean alternarExtensao = false;
 
     public final double kP = 0.030;

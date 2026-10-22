@@ -23,12 +23,16 @@ public class AutonomoHive_BLUE extends RobotMecanisms  {
             ligarShooter();
             liberarShooter();
             andarTras(0.5, 5);
-            esperar(1);
-            ligarIntake();
-            esperar(3);
-            desligarIntake();
+            esperar(2);
+            for (int i = 0; i < 4; i ++) {
+                ligarIntake();
+                esperar(0.25);
+                desligarIntake();
+                esperar(0.25);
+            }
             desligarShooter();
             andarDiagonalTrasDireita(0.7, 110);
+            girarEsquerda(0.6, 10);
             andarTras(0.5, 165);
             andarDireita(0.4, 40);
 

@@ -12,8 +12,8 @@ public class Shooter30x extends OpMode {
 
     public DcMotorEx Shooter;
     public DcMotor Intakes;
-    public double highVelocity = 1110;
-    public double lowVelocity = 510;
+    public double highVelocity = 1230;
+    public double lowVelocity = 630;
     double curTargetVelocity = highVelocity;
     double F = 0;
     double P = 0;
@@ -32,6 +32,7 @@ public class Shooter30x extends OpMode {
         Intakes.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Intakes.setDirection(DcMotor.Direction.REVERSE);
         telemetry.addLine("init completo");
+
     }
 
     @Override

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.BeefrostAutonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "AutonomoRedWall_BLUE")
+@Autonomous(name = "AutonomoWall_BLUE")
 public class AutonomoWall_BLUE extends RobotMecanisms  {
 
     @Override
@@ -18,15 +18,13 @@ public class AutonomoWall_BLUE extends RobotMecanisms  {
         waitForStart();
         if (opModeIsActive()) {
 
-
             andarFrente(0.6, 50);
-            andarEsquerda(6.0, 97);
+            andarEsquerda(6.0, 100);
             andarFrente(0.6, 80);
-            esperar(1);
-            girarEsquerda(0.5,90);
-            esperar(1);
-            andarFrente(10,10);
-            alinharAprilTag(0.3);
+            girarEsquerda(0.5,70);
+            andarDireita(0.4, 14);
+            andarFrente(0.5,15);
+            alinharAprilTag(0.4);
             liberarShooter();
             ligarShooter();
             esperar(2);
@@ -35,13 +33,9 @@ public class AutonomoWall_BLUE extends RobotMecanisms  {
             desligarIntake();
             desligarShooter();
             andarTras(40,25);
-            esperar(1);
             girarDireita(0.5,90);
-            esperar(1);
-            andarTras(0.7, 113);
-
+            andarTras(0.6, 130);
 
         }
     }
-
 }

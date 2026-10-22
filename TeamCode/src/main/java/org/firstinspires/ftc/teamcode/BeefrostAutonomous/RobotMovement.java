@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.BeefrostAutonomous;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -260,61 +260,80 @@ public abstract class RobotMovement extends RobotConfig {
         BR.setPower(0);
     }
 
-    void alinharAprilTag(double potenciaMaxima) {
+    boolean alinharAprilTag(double potenciaMaxima) {
 
         double toleranciaTX = 0.7;
 
+        ElapsedTime tempoLimite = new ElapsedTime();
+        tempoLimite.reset();
+
+        boolean encontrouAprilTag = false;
+
         while (opModeIsActive()) {
 
+            // Se passaram 7 segundos, encerra a tentativa
+            if (tempoLimite.seconds() >= 7.0) {
+                parar();
+                break;
+            }
+
             limelight.updateRobotOrientation(
-                    pinpoint.getHeading(
-                            org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES));
+                    pinpoint.getHeading(AngleUnit.DEGREES)
+            );
 
             LLResult resultado = limelight.getLatestResult();
 
-            if (resultado == null || !resultado.isValid() || resultado.getFiducialResults().isEmpty()) {
+            if (resultado == null ||
+                    !resultado.isValid() ||
+                    resultado.getFiducialResults().isEmpty()) {
 
                 parar();
 
-                telemetry.addLine("Limelight: procurando AprilTag");
+                telemetry.addLine("Procurando AprilTag...");
                 telemetry.update();
 
                 sleep(20);
                 continue;
             }
 
+            // Encontrou uma AprilTag válida!
+            encontrouAprilTag = true;
+
             double tx = resultado.getTx();
 
-            telemetry.addData("AprilTag", "Detectado");
+            telemetry.addData("AprilTag", "Detectada");
             telemetry.addData("TX", "%.2f graus", tx);
             telemetry.update();
 
             if (Math.abs(tx) <= toleranciaTX) {
                 parar();
-
-                telemetry.addLine("AprilTag alinhado!");
-                telemetry.update();
-
-                break;
+                return true;
             }
 
             double rotacao = tx * kP;
 
             rotacao = Math.max(
                     -Math.abs(potenciaMaxima),
-                    Math.min(Math.abs(potenciaMaxima), rotacao));
+                    Math.min(Math.abs(potenciaMaxima), rotacao)
+            );
 
-            double potenciaMinima = Math.min(0.12, Math.abs(potenciaMaxima));
+            double potenciaMinima = Math.min(
+                    0.12,
+                    Math.abs(potenciaMaxima)
+            );
 
             if (Math.abs(rotacao) < potenciaMinima) {
                 rotacao = Math.copySign(potenciaMinima, rotacao);
             }
 
             girarParaAlinhar(rotacao);
+
             sleep(20);
         }
 
         parar();
+
+        return encontrouAprilTag;
     }
 
     private void girarParaAlinhar(double potencia) {
