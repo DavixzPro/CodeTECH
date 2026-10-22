@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
+package org.firstinspires.ftc.teamcode.BeefrostTeleOpBLUE;
 
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -11,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class BeefrostConfig {
+public class BeefrostBlueConfig {
 
     public DcMotor FL, FR, BL, BR;
     public DcMotorEx Shooter;
@@ -33,8 +32,8 @@ public class BeefrostConfig {
 
     public final double P = 246.3;
     public final double F = 15.42;
-    public final double polenVelocity = 1230;
-    public final double nectarVelocity = 1300;
+    public final double polenVelocity = 1210;
+    public final double nectarVelocity = 1260;
     public boolean alternarExtensao = false;
 
     public final double kP = 0.030;
@@ -86,6 +85,6 @@ public class BeefrostConfig {
         Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         Shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        limelight.pipelineSwitch(0);
-       }
+        limelight.pipelineSwitch(1);
+    }
 }

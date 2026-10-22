@@ -1,16 +1,12 @@
-package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
+package org.firstinspires.ftc.teamcode.BeefrostTeleOpBLUE;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+public class BeefrostMechanisms_BLUE {
 
-public class BeefrostMechanisms {
-
-    private final BeefrostConfig robot;
+    private final BeefrostBlueConfig robot;
     private final OpMode opMode;
 
 //    private enum BolaTipo {
@@ -124,8 +120,8 @@ public class BeefrostMechanisms {
 //        opMode.telemetry.addData("Next piece", shootingQueue.peekFirst());
 //    }
 
-    public BeefrostMechanisms(
-            BeefrostConfig robot,
+    public BeefrostMechanisms_BLUE(
+            BeefrostBlueConfig robot,
             OpMode opMode
     ) {
         this.robot = robot;

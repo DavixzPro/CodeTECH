@@ -1,17 +1,17 @@
-package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
+package org.firstinspires.ftc.teamcode.BeefrostTeleOpBLUE;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-public class BeefrostMovement {
+public class BeefrostMovement_BLUE {
 
-    private final BeefrostConfig robot;
+    private final BeefrostBlueConfig robot;
     private final OpMode opMode;
 
     private LLResult resultadoLimelight;
 
-    public BeefrostMovement(
-            BeefrostConfig robot,
+    public BeefrostMovement_BLUE(
+            BeefrostBlueConfig robot,
             OpMode opMode
     ) {
         this.robot = robot;
@@ -84,7 +84,7 @@ public class BeefrostMovement {
     public boolean isTagDetectada() {
         return resultadoLimelight != null
                 && resultadoLimelight.isValid() && !resultadoLimelight
-                        .getFiducialResults().isEmpty();
+                .getFiducialResults().isEmpty();
     }
 
 

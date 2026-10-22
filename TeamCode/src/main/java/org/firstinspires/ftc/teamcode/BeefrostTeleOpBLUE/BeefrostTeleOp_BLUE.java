@@ -1,24 +1,24 @@
-package org.firstinspires.ftc.teamcode.BeefrostTeleOp;
+package org.firstinspires.ftc.teamcode.BeefrostTeleOpBLUE;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "BeefrostTeleOp")
-public class BeefrostTeleOp extends OpMode {
+@TeleOp(name = "BeefrostTeleOp_BLUE")
+public class BeefrostTeleOp_BLUE extends OpMode {
 
-    private BeefrostConfig robot;
-    private BeefrostMovement movement;
-    private BeefrostMechanisms mechanisms;
+    private BeefrostBlueConfig robot;
+    private BeefrostMovement_BLUE movement;
+    private BeefrostMechanisms_BLUE mechanisms;
 
     @Override
     public void init() {
 
-        robot = new BeefrostConfig();
+        robot = new BeefrostBlueConfig();
         robot.init(hardwareMap);
-        movement = new BeefrostMovement(robot, this);
-        mechanisms = new BeefrostMechanisms(robot, this);
+        movement = new BeefrostMovement_BLUE(robot, this);
+        mechanisms = new BeefrostMechanisms_BLUE(robot, this);
 
         telemetry.addLine("========== BEEFROST ==========");
         telemetry.addLine("Inicializacao concluida");

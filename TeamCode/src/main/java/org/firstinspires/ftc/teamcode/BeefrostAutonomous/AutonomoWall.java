@@ -32,10 +32,12 @@ public class AutonomoWall extends RobotMecanisms  {
             esperar(3);
             desligarIntake();
             desligarShooter();
-            andarTras(40,20);
+            andarTras(40,25);
             esperar(1);
-            andarEsquerda(0.7, 125);
             girarDireita(0.5,90);
+            esperar(1);
+            andarTras(0.7, 113);
+
 
         }
     }
