@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.BeefrostAutonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "AutonomoWall")
-public class AutonomoWall extends RobotMecanisms  {
+@Autonomous(name = "AutonomoRedWall_BLUE")
+public class AutonomoWall_BLUE extends RobotMecanisms  {
 
     @Override
     public void runOpMode() {
@@ -12,6 +12,8 @@ public class AutonomoWall extends RobotMecanisms  {
         PolenPosition();
         travarShooter();
         setTelemetry();
+        limelight.pipelineSwitch(1);
+        limelight.start();
 
         waitForStart();
         if (opModeIsActive()) {

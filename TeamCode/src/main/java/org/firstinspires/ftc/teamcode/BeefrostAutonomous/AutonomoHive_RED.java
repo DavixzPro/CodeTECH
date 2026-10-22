@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.BeefrostAutonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "AutonomoHive")
-public class AutonomoHive extends RobotMecanisms  {
+@Autonomous(name = "AutonomoHive_RED")
+public class AutonomoHive_RED extends RobotMecanisms  {
 
     @Override
     public void runOpMode() {
@@ -12,6 +12,8 @@ public class AutonomoHive extends RobotMecanisms  {
         NectarPosition();
         travarShooter();
         setTelemetry();
+        limelight.pipelineSwitch(0);
+        limelight.start();
 
         waitForStart();
         if (opModeIsActive()) {

@@ -12,11 +12,11 @@ public class Shooter30x extends OpMode {
 
     public DcMotorEx Shooter;
     public DcMotor Intakes;
-    public double highVelocity = 1250;
-    public double lowVelocity = 650;
+    public double highVelocity = 1110;
+    public double lowVelocity = 510;
     double curTargetVelocity = highVelocity;
-    double F = 15.42;
-    double P = 246.3;
+    double F = 0;
+    double P = 0;
     double[] stepSizes = {100.0, 10.0, 1.0, 0.1, 0.01};
     int stepIndex = 1;
 

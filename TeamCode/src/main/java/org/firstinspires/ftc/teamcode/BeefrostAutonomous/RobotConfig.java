@@ -34,8 +34,6 @@ public abstract class RobotConfig extends LinearOpMode {
     protected double kPHeading = 0.012;
     protected double ROTACAO_MAXIMA = 0.25;
 
-    protected boolean Flower = false;
-
 
     double F = 15.42;
     double P = 246.3;
@@ -60,8 +58,6 @@ public abstract class RobotConfig extends LinearOpMode {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
-        limelight.start();
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(P, 0, 0 , F);
         Shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
