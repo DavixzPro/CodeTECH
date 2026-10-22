@@ -18,7 +18,6 @@ public class AutonomoWall_RED extends RobotMecanisms  {
         waitForStart();
         if (opModeIsActive()) {
 
-
             andarFrente(0.6, 50);
             andarEsquerda(6.0, 100);
             andarFrente(0.6, 80);
